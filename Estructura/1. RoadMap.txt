@@ -1,0 +1,79 @@
+Roadmap MVP v1
+Semana 1
+
+Infraestructura
+
+Backend
+Express
+MySQL
+JWT
+Login
+Frontend
+React
+Tailwind
+Layout
+
+Resultado:
+
+Usuario puede iniciar sesión.
+Semana 2
+
+Usuarios y permisos.
+
+Resultado:
+
+Administrador crea usuarios.
+Semana 3
+
+Productos.
+
+Categorías.
+
+Inventario básico.
+
+Resultado:
+
+Administrador crea productos.
+Semana 4
+
+Ventas.
+
+Detalle de ventas.
+
+Caja.
+
+Resultado:
+
+Sistema ya vende.
+Semana 5
+
+Dashboard.
+
+Reportes.
+
+Exportaciones.
+
+Resultado:
+
+Sistema útil para producción.
+Semana 6
+
+Auditoría.
+
+Logs.
+
+Pruebas.
+
+Respaldos.
+
+Resultado:
+
+MVP v1 terminado.
+
+Recomendación final
+
+Construye primero un sistema que pueda responder a esta pregunta:
+
+"¿Quién vendió qué, cuándo, por cuánto dinero y qué pasó con el inventario?"
+
+Si AdaEv responde correctamente esa pregunta, ya tendrás un producto útil. Todo lo demás (entradas, QR, asistencia, sorteos, staff, estadísticas avanzadas) puede añadirse después sin romper la arquitectura. Esa es la señal de que el diseño está bien hecho.

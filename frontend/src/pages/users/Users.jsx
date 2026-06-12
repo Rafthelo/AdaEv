@@ -1,0 +1,238 @@
+import { useState, useEffect } from 'react';
+import PageWrapper from '../../components/layout/PageWrapper';
+import Table       from '../../components/common/Table';
+import Button      from '../../components/common/Button';
+import Modal       from '../../components/common/Modal';
+import Input       from '../../components/common/Input';
+import Badge       from '../../components/common/Badge';
+import Alert       from '../../components/common/Alert';
+import Pagination  from '../../components/common/Pagination';
+import usePermissions from '../../hooks/usePermissions';
+import { getUsers, createUser, updateUser, deactivateUser } from '../../api/endpoints/users.api';
+import { getRoles } from '../../api/endpoints/roles.api';
+
+const EMPTY_FORM = {
+  username: '', email: '', password: '',
+  first_name: '', last_name: '', roles: [],
+};
+
+const Users = () => {
+  const { can } = usePermissions();
+
+  const [users,      setUsers]      = useState([]);
+  const [roles,      setRoles]      = useState([]);
+  const [meta,       setMeta]       = useState({});
+  const [loading,    setLoading]    = useState(true);
+  const [page,       setPage]       = useState(1);
+  const [search,     setSearch]     = useState('');
+  const [modalOpen,  setModalOpen]  = useState(false);
+  const [editing,    setEditing]    = useState(null);
+  const [form,       setForm]       = useState(EMPTY_FORM);
+  const [saving,     setSaving]     = useState(false);
+  const [alert,      setAlert]      = useState({ type: '', message: '' });
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const { data } = await getUsers({ page, limit: 10, search });
+        if (!cancelled) { setUsers(data.data); setMeta(data.meta); }
+      } catch {
+        if (!cancelled) setAlert({ type: 'error', message: 'Error al cargar usuarios' });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetch();
+    return () => { cancelled = true; };
+  }, [page, search]);
+
+  useEffect(() => {
+    getRoles().then(({ data }) => setRoles(data.data || [])).catch(() => {});
+  }, []);
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm(EMPTY_FORM);
+    setModalOpen(true);
+  };
+
+  const openEdit = (user) => {
+    setEditing(user);
+    setForm({
+      username:   user.username,
+      email:      user.email,
+      password:   '',
+      first_name: user.first_name,
+      last_name:  user.last_name,
+      roles:      user.roles?.map((r) => r.id) || [],
+    });
+    setModalOpen(true);
+  };
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleRoleToggle = (roleId) => {
+    const id = parseInt(roleId);
+    setForm((prev) => ({
+      ...prev,
+      roles: prev.roles.includes(id)
+        ? prev.roles.filter((r) => r !== id)
+        : [...prev.roles, id],
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editing) {
+        const payload = {
+          email:      form.email,
+          first_name: form.first_name,
+          last_name:  form.last_name,
+          roles:      form.roles,
+        };
+        await updateUser(editing.id, payload);
+        setAlert({ type: 'success', message: 'Usuario actualizado exitosamente' });
+      } else {
+        await createUser(form);
+        setAlert({ type: 'success', message: 'Usuario creado exitosamente' });
+      }
+      setModalOpen(false);
+      setPage(1);
+    } catch (err) {
+      setAlert({ type: 'error', message: err.response?.data?.message || 'Error al guardar' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeactivate = async (id) => {
+    if (!window.confirm('¿Desactivar este usuario?')) return;
+    try {
+      await deactivateUser(id);
+      setAlert({ type: 'success', message: 'Usuario desactivado' });
+      setPage(1);
+    } catch (err) {
+      setAlert({ type: 'error', message: err.response?.data?.message || 'Error al desactivar' });
+    }
+  };
+
+  const columns = [
+    { key: 'username',   label: 'Usuario',   render: (r) => <span className="font-medium text-gray-800">{r.username}</span> },
+    { key: 'email',      label: 'Email',     render: (r) => r.email },
+    { key: 'first_name', label: 'Nombre',    render: (r) => `${r.first_name} ${r.last_name}` },
+    { key: 'is_active',  label: 'Estado',    render: (r) => <Badge label={r.is_active ? 'Activo' : 'Inactivo'} color={r.is_active ? 'green' : 'red'} /> },
+    { key: 'last_login_at', label: 'Último acceso', render: (r) => r.last_login_at ? new Date(r.last_login_at).toLocaleDateString('es-BO') : '—' },
+    {
+      key: 'actions', label: 'Acciones', width: '160px',
+      render: (r) => (
+        <div className="flex gap-2">
+          {can('users:manage') && (
+            <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
+          )}
+          {can('users:manage') && r.is_active === 1 && (
+            <Button size="sm" variant="danger" onClick={() => handleDeactivate(r.id)}>Desactivar</Button>
+          )}
+        </div>
+      )
+    },
+  ];
+
+  return (
+    <PageWrapper title="Usuarios">
+      {alert.message && (
+        <div className="mb-4">
+          <Alert type={alert.type} message={alert.message} onClose={() => setAlert({ type: '', message: '' })} />
+        </div>
+      )}
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <input
+            type="text"
+            placeholder="Buscar usuario..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+          />
+          {can('users:manage') && (
+            <Button onClick={openCreate} icon="＋">Nuevo Usuario</Button>
+          )}
+        </div>
+
+        <Table
+          columns={columns}
+          data={users}
+          loading={loading}
+          emptyMessage="No hay usuarios registrados"
+        />
+
+        <Pagination page={page} totalPages={meta.totalPages || 1} onPageChange={setPage} />
+      </div>
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editing ? 'Editar Usuario' : 'Nuevo Usuario'}
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Nombre" name="first_name" value={form.first_name}
+              onChange={handleChange} required placeholder="Nombre"
+            />
+            <Input
+              label="Apellido" name="last_name" value={form.last_name}
+              onChange={handleChange} required placeholder="Apellido"
+            />
+          </div>
+          <Input
+            label="Usuario" name="username" value={form.username}
+            onChange={handleChange} required placeholder="Nombre de usuario"
+            disabled={!!editing}
+          />
+          <Input
+            label="Email" name="email" type="email" value={form.email}
+            onChange={handleChange} required placeholder="correo@ejemplo.com"
+          />
+          {!editing && (
+            <Input
+              label="Contraseña" name="password" type="password" value={form.password}
+              onChange={handleChange} required placeholder="Mínimo 6 caracteres"
+            />
+          )}
+
+          {/* Roles */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">Roles <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-2 gap-2">
+              {roles.map((role) => (
+                <label key={role.id} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.roles.includes(role.id)}
+                    onChange={() => handleRoleToggle(role.id)}
+                    className="rounded border-gray-300 text-blue-600"
+                  />
+                  <span className="text-sm text-gray-700 capitalize">{role.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancelar</Button>
+            <Button type="submit" loading={saving}>
+              {editing ? 'Guardar cambios' : 'Crear usuario'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </PageWrapper>
+  );
+};
+
+export default Users;

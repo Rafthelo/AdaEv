@@ -1,0 +1,33 @@
+# === DEPENDENCIES ===
+node_modules/
+.npm
+
+# === ENVIRONMENT ===
+.env
+.env.local
+.env.production
+
+# === LOGS ===
+logs/
+*.log
+npm-debug.log*
+
+# === BUILD ===
+dist/
+build/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === IDE ===
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# === MYSQL ===
+*.sql.bak
