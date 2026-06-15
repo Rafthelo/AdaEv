@@ -17,7 +17,27 @@ router.get('/stats',
   requirePermission(PERMISSIONS.SALES_READ),
   salesController.getStats
 );
+router.get('/pending-orders',
+  authMiddleware,
+  requirePermission(PERMISSIONS.SALES_PREPARE),
+  salesController.getPendingOrders
+);
+router.get('/ready-orders',
+  authMiddleware,
+  requirePermission(PERMISSIONS.SALES_PREPARE),
+  salesController.getReadyOrders
+);
+router.patch('/:id/ready',
+  authMiddleware,
+  requirePermission(PERMISSIONS.SALES_PREPARE),
+  salesController.markReady
+);
 
+router.patch('/:id/deliver',
+  authMiddleware,
+  requirePermission(PERMISSIONS.SALES_CONFIRM_DELIVERY),
+  salesController.confirmDelivery
+);
 router.get('/:id',
   authMiddleware,
   requirePermission(PERMISSIONS.SALES_READ),

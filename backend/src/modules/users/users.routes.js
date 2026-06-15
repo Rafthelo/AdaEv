@@ -48,4 +48,10 @@ router.patch('/:id/deactivate',
   usersController.deactivate
 );
 
+router.delete('/:id',
+  authMiddleware,
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  usersController.remove
+);
+
 module.exports = router;

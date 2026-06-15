@@ -95,25 +95,36 @@ const Categories = () => {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al desactivar' });
     }
   };
-
+  const handleActivate = async (id) => {
+    try {
+      await updateCategory(id, { is_active: true });
+      setAlert({ type: 'success', message: 'Categoría activada' });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setAlert({ type: 'error', message: err.response?.data?.message || 'Error al activar' });
+    }
+  };
   const columns = [
     { key: 'name',        label: 'Nombre',     render: (r) => <span className="font-medium text-gray-800">{r.name}</span> },
     { key: 'description', label: 'Descripción', render: (r) => r.description || '—' },
     { key: 'parent_name', label: 'Categoría padre', render: (r) => r.parent_name || '—' },
     { key: 'is_active',   label: 'Estado', render: (r) => <Badge label={r.is_active ? 'Activa' : 'Inactiva'} color={r.is_active ? 'green' : 'red'} /> },
-    {
-      key: 'actions', label: 'Acciones', width: '160px',
-      render: (r) => (
-        <div className="flex gap-2">
-          {can('categories:update') && (
-            <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
-          )}
-          {can('categories:delete') && r.is_active === 1 && (
-            <Button size="sm" variant="danger" onClick={() => handleDeactivate(r.id)}>Desactivar</Button>
-          )}
-        </div>
-      )
-    },
+{
+  key: 'actions', label: 'Acciones', width: '160px',
+  render: (r) => (
+    <div className="flex gap-2">
+      {can('categories:update') && (
+        <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
+      )}
+      {can('categories:delete') && r.is_active === 1 && (
+        <Button size="sm" variant="danger" onClick={() => handleDeactivate(r.id)}>Desactivar</Button>
+      )}
+      {can('categories:update') && r.is_active === 0 && (
+        <Button size="sm" variant="success" onClick={() => handleActivate(r.id)}>Activar</Button>
+      )}
+    </div>
+  )
+},
   ];
 
   return (

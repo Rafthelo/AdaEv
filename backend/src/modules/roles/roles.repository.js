@@ -1,16 +1,17 @@
 const pool = require('../../config/database');
 
 const findAll = async () => {
-  const [rows] = await pool.execute(
-    `SELECT r.id, r.name, r.description, r.is_active, r.created_at,
-       COUNT(DISTINCT ur.user_id)    AS total_users,
-       COUNT(DISTINCT rp.permission_id) AS total_permissions
-     FROM roles r
-     LEFT JOIN user_roles ur       ON r.id = ur.role_id
-     LEFT JOIN role_permissions rp ON r.id = rp.role_id
-     GROUP BY r.id
-     ORDER BY r.id ASC`
-  );
+const [rows] = await pool.execute(
+  `SELECT r.id, r.name, r.description, r.is_active, r.created_at,
+     COUNT(DISTINCT CASE WHEN u.deleted_at IS NULL THEN ur.user_id END) AS total_users,
+     COUNT(DISTINCT rp.permission_id) AS total_permissions
+   FROM roles r
+   LEFT JOIN user_roles ur       ON r.id = ur.role_id
+   LEFT JOIN users u             ON ur.user_id = u.id
+   LEFT JOIN role_permissions rp ON r.id = rp.role_id
+   GROUP BY r.id
+   ORDER BY r.id ASC`
+);
   return rows;
 };
 

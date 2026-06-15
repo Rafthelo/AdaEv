@@ -21,7 +21,7 @@ const Login = () => {
     setError('');
     try {
       await login(form);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Error al iniciar sesión');
     } finally {

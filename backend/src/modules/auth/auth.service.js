@@ -31,19 +31,21 @@ const login = async (username, password, meta = {}) => {
   ]);
 
   // 5. Generar access token
-  const accessToken = jwt.sign(
-    {
-      id:          user.id,
-      username:    user.username,
-      email:       user.email,
-      first_name:  user.first_name,
-      last_name:   user.last_name,
-      roles,
-      permissions,
-    },
-    env.jwt.secret,
-    { expiresIn: env.jwt.expiresIn }
-  );
+    const accessToken = jwt.sign(
+      {
+        id:          user.id,
+        username:    user.username,
+        email:       user.email,
+        first_name:  user.first_name,
+        last_name:   user.last_name,
+        seller_type: user.seller_type || null,
+        assigned_event_id: user.assigned_event_id || null,
+        roles,
+        permissions,
+      },
+      env.jwt.secret,
+      { expiresIn: env.jwt.expiresIn }
+    );
 
   // 6. Generar refresh token
   const refreshToken = generateToken();
@@ -63,19 +65,21 @@ const login = async (username, password, meta = {}) => {
     user_agent: meta.userAgent,
   });
 
-  return {
-    accessToken,
-    refreshToken,
-    user: {
-      id:         user.id,
-      username:   user.username,
-      email:      user.email,
-      first_name: user.first_name,
-      last_name:  user.last_name,
-      roles,
-      permissions,
-    },
-  };
+return {
+  accessToken,
+  refreshToken,
+  user: {
+    id:         user.id,
+    username:   user.username,
+    email:      user.email,
+    first_name: user.first_name,
+    last_name:  user.last_name,
+    seller_type: user.seller_type || null,
+    assigned_event_id: user.assigned_event_id || null,
+    roles,
+    permissions,
+  },
+};
 };
 
 const refresh = async (token) => {
@@ -101,19 +105,21 @@ const refresh = async (token) => {
   ]);
 
   // 5. Generar nuevo access token
-  const accessToken = jwt.sign(
-    {
-      id:         user.id,
-      username:   user.username,
-      email:      user.email,
-      first_name: user.first_name,
-      last_name:  user.last_name,
-      roles,
-      permissions,
-    },
-    env.jwt.secret,
-    { expiresIn: env.jwt.expiresIn }
-  );
+    const accessToken = jwt.sign(
+      {
+        id:         user.id,
+        username:   user.username,
+        email:      user.email,
+        first_name: user.first_name,
+        last_name:  user.last_name,
+        seller_type: user.seller_type || null,
+        assigned_event_id: user.assigned_event_id || null,
+        roles,
+        permissions,
+      },
+      env.jwt.secret,
+      { expiresIn: env.jwt.expiresIn }
+    );
 
   // 6. Generar nuevo refresh token
   const newRefreshToken = generateToken();

@@ -12,12 +12,15 @@ const Topbar = ({ title }) => {
     navigate('/login');
   };
 
+  const goToProfile = () => {
+    setMenu(false);
+    navigate('/profile');
+  };
+
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-      {/* Title */}
       <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
 
-      {/* User menu */}
       <div className="relative">
         <button
           onClick={() => setMenu(!menuOpen)}
@@ -38,6 +41,12 @@ const Topbar = ({ title }) => {
               <p className="text-sm font-medium text-gray-800">{user?.username}</p>
               <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
+            <button
+              onClick={goToProfile}
+              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+            >
+              Mi perfil
+            </button>
             <button
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"

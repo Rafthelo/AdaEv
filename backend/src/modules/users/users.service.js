@@ -54,12 +54,12 @@ const update = async (id, data, updatedBy, meta = {}) => {
     throw Object.assign(new Error('Usuario no encontrado'), { statusCode: 404, code: 'NOT_FOUND' });
   }
 
-  if (data.email && data.email !== existing.email) {
-    const emailTaken = await usersRepository.findByEmail(data.email);
-    if (emailTaken) {
-      throw Object.assign(new Error('El email ya está registrado'), { statusCode: 409, code: 'CONFLICT' });
-    }
+if (data.email && data.email !== existing.email) {
+  const emailTaken = await usersRepository.findByEmail(data.email);
+  if (emailTaken && emailTaken.id !== parseInt(id)) {
+    throw Object.assign(new Error('El email ya está registrado'), { statusCode: 409, code: 'CONFLICT' });
   }
+}
 
   await usersRepository.update(id, data);
 
@@ -110,7 +110,7 @@ const deactivate = async (id, deactivatedBy, meta = {}) => {
   if (!existing) {
     throw Object.assign(new Error('Usuario no encontrado'), { statusCode: 404, code: 'NOT_FOUND' });
   }
-  if (id === deactivatedBy) {
+  if (parseInt(id) === parseInt(deactivatedBy)) {
     throw Object.assign(new Error('No puedes desactivar tu propio usuario'), { statusCode: 422, code: 'BUSINESS_ERROR' });
   }
 
@@ -126,4 +126,25 @@ const deactivate = async (id, deactivatedBy, meta = {}) => {
   });
 };
 
-module.exports = { getAll, getById, create, update, changePassword, deactivate };
+const remove = async (id, removedBy, meta = {}) => {
+  const existing = await usersRepository.findById(id);
+  if (!existing) {
+    throw Object.assign(new Error('Usuario no encontrado'), { statusCode: 404, code: 'NOT_FOUND' });
+  }
+  if (parseInt(id) === parseInt(removedBy)) {
+    throw Object.assign(new Error('No puedes eliminar tu propio usuario'), { statusCode: 422, code: 'BUSINESS_ERROR' });
+  }
+
+  await usersRepository.softDelete(id);
+
+  await auditService.log({
+    user_id:    removedBy,
+    action:     'users:delete',
+    entity:     'users',
+    entity_id:  id,
+    ip_address: meta.ip,
+    user_agent: meta.userAgent,
+  });
+};
+
+module.exports = { getAll, getById, create, update, changePassword, deactivate, remove };

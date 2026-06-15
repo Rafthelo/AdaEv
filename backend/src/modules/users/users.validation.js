@@ -26,6 +26,8 @@ const createUserSchema = Joi.object({
     'array.min':    'Debe asignar al menos un rol',
     'any.required': 'Los roles son requeridos',
   }),
+  seller_type: Joi.string().valid('independent', 'waiter', 'bartender').optional().allow(null, ''),
+  assigned_event_id: Joi.number().integer().optional().allow(null),
 });
 
 const updateUserSchema = Joi.object({
@@ -36,6 +38,8 @@ const updateUserSchema = Joi.object({
   last_name:  Joi.string().min(2).max(50),
   is_active:  Joi.boolean(),
   roles:      Joi.array().items(Joi.number().integer()).min(1),
+  seller_type: Joi.string().valid('independent', 'waiter', 'bartender').optional().allow(null, ''),
+  assigned_event_id: Joi.number().integer().optional().allow(null),
 }).min(1).messages({
   'object.min': 'Debe enviar al menos un campo para actualizar',
 });

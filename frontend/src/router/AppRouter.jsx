@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import PrivateRoute    from './PrivateRoute';
 import PermissionRoute from './PermissionRoute';
 
@@ -13,6 +13,11 @@ import Sales     from '../pages/sales/Sales';
 import CashRegister from '../pages/cash-register/CashRegister';
 import Audit     from '../pages/audit/Audit';
 import Categories from '../pages/categories/Categories';
+import HomeRedirect from './HomeRedirect';
+import Custody from '../pages/custody/Custody';
+import Finance       from '../pages/finance/Finance';
+import Organizations from '../pages/organizations/Organizations';
+import Profile from '../pages/profile/Profile';
 
 const AppRouter = () => {
   return (
@@ -24,7 +29,7 @@ const AppRouter = () => {
         {/* Privadas */}
         <Route path="/" element={
           <PrivateRoute>
-            <Navigate to="/dashboard" replace />
+            <HomeRedirect />
           </PrivateRoute>
         } />
 
@@ -107,9 +112,35 @@ const AppRouter = () => {
             </PermissionRoute>
           </PrivateRoute>
         } />
+<Route path="/custody" element={
+  <PrivateRoute>
+    <PermissionRoute permission="custody:read">
+      <Custody />
+    </PermissionRoute>
+  </PrivateRoute>
+} />
+<Route path="/finance" element={
+  <PrivateRoute>
+    <PermissionRoute permission="finance:read">
+      <Finance />
+    </PermissionRoute>
+  </PrivateRoute>
+} />
 
+<Route path="/organizations" element={
+  <PrivateRoute>
+    <PermissionRoute permission="organizations:read">
+      <Organizations />
+    </PermissionRoute>
+  </PrivateRoute>
+} />
+<Route path="/profile" element={
+  <PrivateRoute>
+    <Profile />
+  </PrivateRoute>
+} />
         {/* 404 */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<HomeRedirect />} />
       </Routes>
     </BrowserRouter>
   );

@@ -68,5 +68,14 @@ const deactivate = async (req, res, next) => {
     next(error);
   }
 };
+const remove = async (req, res, next) => {
+  try {
+    const meta = { ip: req.ip, userAgent: req.headers['user-agent'] };
+    await usersService.remove(req.params.id, req.user.id, meta);
+    return res.status(HTTP_STATUS.OK).json(successResponse(null, 'Usuario eliminado exitosamente'));
+  } catch (error) {
+    next(error);
+  }
+};
 
-module.exports = { getAll, getById, create, update, changePassword, deactivate };
+module.exports = { getAll, getById, create, update, changePassword, deactivate, remove };

@@ -8,19 +8,30 @@ import Badge       from '../../components/common/Badge';
 import Alert       from '../../components/common/Alert';
 import Pagination  from '../../components/common/Pagination';
 import usePermissions from '../../hooks/usePermissions';
-import { getUsers, createUser, updateUser, deactivateUser } from '../../api/endpoints/users.api';
+import useAuth from '../../hooks/useAuth';
+import { getUsers, createUser, updateUser, deactivateUser, deleteUser } from '../../api/endpoints/users.api';
 import { getRoles } from '../../api/endpoints/roles.api';
+import { getEvents } from '../../api/endpoints/events.api';
 
 const EMPTY_FORM = {
   username: '', email: '', password: '',
   first_name: '', last_name: '', roles: [],
+  seller_type: '', assigned_event_id: '',
+};
+
+const SELLER_TYPE_LABELS = {
+  independent: 'Vendedor independiente',
+  waiter:      'Mesero',
+  bartender:   'Bartender',
 };
 
 const Users = () => {
   const { can } = usePermissions();
+  const { user } = useAuth();
 
   const [users,      setUsers]      = useState([]);
   const [roles,      setRoles]      = useState([]);
+  const [events,     setEvents]     = useState([]);
   const [meta,       setMeta]       = useState({});
   const [loading,    setLoading]    = useState(true);
   const [page,       setPage]       = useState(1);
@@ -30,7 +41,7 @@ const Users = () => {
   const [form,       setForm]       = useState(EMPTY_FORM);
   const [saving,     setSaving]     = useState(false);
   const [alert,      setAlert]      = useState({ type: '', message: '' });
-
+  const [refreshKey, setRefreshKey] = useState(0);
   useEffect(() => {
     let cancelled = false;
     const fetch = async () => {
@@ -46,11 +57,12 @@ const Users = () => {
     };
     fetch();
     return () => { cancelled = true; };
-  }, [page, search]);
+  }, [page, search, refreshKey]);
 
-  useEffect(() => {
-    getRoles().then(({ data }) => setRoles(data.data || [])).catch(() => {});
-  }, []);
+    useEffect(() => {
+      getRoles().then(({ data }) => setRoles(data.data || [])).catch(() => {});
+      getEvents({ limit: 100 }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
+    }, []);
 
   const openCreate = () => {
     setEditing(null);
@@ -58,18 +70,20 @@ const Users = () => {
     setModalOpen(true);
   };
 
-  const openEdit = (user) => {
-    setEditing(user);
-    setForm({
-      username:   user.username,
-      email:      user.email,
-      password:   '',
-      first_name: user.first_name,
-      last_name:  user.last_name,
-      roles:      user.roles?.map((r) => r.id) || [],
-    });
-    setModalOpen(true);
-  };
+    const openEdit = (user) => {
+      setEditing(user);
+      setForm({
+        username:   user.username,
+        email:      user.email,
+        password:   '',
+        first_name: user.first_name,
+        last_name:  user.last_name,
+        roles:      user.roles?.map((r) => r.id) || [],
+        seller_type: user.seller_type || '',
+        assigned_event_id: user.assigned_event_id || '',
+      });
+      setModalOpen(true);
+    };
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -93,11 +107,18 @@ const Users = () => {
           first_name: form.first_name,
           last_name:  form.last_name,
           roles:      form.roles,
+          seller_type: form.seller_type || null,
+          assigned_event_id: form.assigned_event_id ? parseInt(form.assigned_event_id) : null,
         };
-        await updateUser(editing.id, payload);
+      await updateUser(editing.id, payload);      
         setAlert({ type: 'success', message: 'Usuario actualizado exitosamente' });
       } else {
-        await createUser(form);
+        const payload = {
+          ...form,
+          seller_type: form.seller_type || null,
+          assigned_event_id: form.assigned_event_id ? parseInt(form.assigned_event_id) : null,
+        };
+        await createUser(payload);
         setAlert({ type: 'success', message: 'Usuario creado exitosamente' });
       }
       setModalOpen(false);
@@ -119,12 +140,32 @@ const Users = () => {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al desactivar' });
     }
   };
-
+  const handleActivate = async (id) => {
+  try {
+    await updateUser(id, { is_active: true });
+    setAlert({ type: 'success', message: 'Usuario activado' });
+    setRefreshKey((k) => k + 1);
+  } catch (err) {
+    setAlert({ type: 'error', message: err.response?.data?.message || 'Error al activar' });
+  }
+};
+const handleDelete = async (id) => {
+  if (!window.confirm('¿Eliminar este usuario? Esta acción no se puede deshacer desde la interfaz.')) return;
+  try {
+    await deleteUser(id);
+    setAlert({ type: 'success', message: 'Usuario eliminado exitosamente' });
+    setRefreshKey((k) => k + 1);
+  } catch (err) {
+    setAlert({ type: 'error', message: err.response?.data?.message || 'Error al eliminar' });
+  }
+};
   const columns = [
     { key: 'username',   label: 'Usuario',   render: (r) => <span className="font-medium text-gray-800">{r.username}</span> },
     { key: 'email',      label: 'Email',     render: (r) => r.email },
     { key: 'first_name', label: 'Nombre',    render: (r) => `${r.first_name} ${r.last_name}` },
     { key: 'is_active',  label: 'Estado',    render: (r) => <Badge label={r.is_active ? 'Activo' : 'Inactivo'} color={r.is_active ? 'green' : 'red'} /> },
+    { key: 'seller_type', label: 'Tipo vendedor', render: (r) => r.seller_type ? SELLER_TYPE_LABELS[r.seller_type] : '—' },
+    { key: 'assigned_event_name', label: 'Evento asignado', render: (r) => r.assigned_event_name || '—' },
     { key: 'last_login_at', label: 'Último acceso', render: (r) => r.last_login_at ? new Date(r.last_login_at).toLocaleDateString('es-BO') : '—' },
     {
       key: 'actions', label: 'Acciones', width: '160px',
@@ -133,9 +174,15 @@ const Users = () => {
           {can('users:manage') && (
             <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
           )}
-          {can('users:manage') && r.is_active === 1 && (
-            <Button size="sm" variant="danger" onClick={() => handleDeactivate(r.id)}>Desactivar</Button>
-          )}
+{can('users:manage') && r.id !== user.id && r.is_active === 1 && (
+  <Button size="sm" variant="danger" onClick={() => handleDeactivate(r.id)}>Desactivar</Button>
+)}
+{can('users:manage') && r.id !== user.id && r.is_active === 0 && (
+  <Button size="sm" variant="success" onClick={() => handleActivate(r.id)}>Activar</Button>
+)}
+{can('users:manage') && r.id !== user.id && (
+  <Button size="sm" variant="ghost" onClick={() => handleDelete(r.id)}>Eliminar</Button>
+)}
         </div>
       )
     },
@@ -204,7 +251,37 @@ const Users = () => {
               onChange={handleChange} required placeholder="Mínimo 6 caracteres"
             />
           )}
-
+            {/* Tipo de vendedor y evento asignado */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">Tipo de vendedor</label>
+                <select
+                  name="seller_type"
+                  value={form.seller_type}
+                  onChange={handleChange}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">No es vendedor</option>
+                  <option value="independent">Vendedor independiente</option>
+                  <option value="waiter">Mesero</option>
+                  <option value="bartender">Bartender</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">Evento asignado</label>
+                <select
+                  name="assigned_event_id"
+                  value={form.assigned_event_id}
+                  onChange={handleChange}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Sin evento asignado</option>
+                  {events.map((ev) => (
+                    <option key={ev.id} value={ev.id}>{ev.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
           {/* Roles */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-700">Roles <span className="text-red-500">*</span></label>

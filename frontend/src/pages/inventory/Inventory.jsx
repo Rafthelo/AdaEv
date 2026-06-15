@@ -32,6 +32,7 @@ const Inventory = () => {
   const [form,       setForm]       = useState(EMPTY_ADJUST);
   const [saving,     setSaving]     = useState(false);
   const [alert,      setAlert]      = useState({ type: '', message: '' });
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,7 +49,7 @@ const Inventory = () => {
     };
     fetch();
     return () => { cancelled = true; };
-  }, [page, lowStock]);
+  }, [page, lowStock, refreshKey]);
 
   useEffect(() => {
     getEvents({ limit: 100 }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
@@ -72,7 +73,7 @@ const Inventory = () => {
       setAlert({ type: 'success', message: 'Movimiento de inventario registrado' });
       setModalOpen(false);
       setForm(EMPTY_ADJUST);
-      setPage(1);
+      setRefreshKey((k) => k + 1);
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al ajustar inventario' });
     } finally {
@@ -92,7 +93,7 @@ const Inventory = () => {
       await setMinStock(editingItem.id, { min_stock: parseInt(minStockValue) });
       setAlert({ type: 'success', message: 'Stock mínimo actualizado' });
       setMinStockModal(false);
-      setPage(1);
+      setRefreshKey((k) => k + 1);
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al actualizar' });
     } finally {

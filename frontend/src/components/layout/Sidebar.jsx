@@ -2,16 +2,18 @@ import { NavLink } from 'react-router-dom';
 import usePermissions from '../../hooks/usePermissions';
 
 const navItems = [
-  { to: '/dashboard',     label: 'Dashboard',    permission: 'dashboard:view', icon: '📊' },
-  { to: '/events',        label: 'Eventos',      permission: 'events:read',    icon: '🎯' },
-  { to: '/products',      label: 'Productos',    permission: 'products:read',  icon: '📦' },
-  { to: '/categories',    label: 'Categorías',   permission: 'categories:read', icon: '🏷️' },
-  { to: '/inventory',     label: 'Inventario',   permission: 'inventory:read', icon: '🏪' },
-  { to: '/sales',         label: 'Ventas',       permission: 'sales:read',     icon: '💰' },
-  { to: '/cash-register', label: 'Caja',         permission: 'cash:read',      icon: '🏧' },
-  { to: '/users',         label: 'Usuarios',     permission: 'users:manage',   icon: '👥' },
-  { to: '/roles',         label: 'Roles',        permission: 'roles:manage',   icon: '🔑' },
-  { to: '/audit',         label: 'Auditoría',    permission: 'audit:read',     icon: '📋' },
+  { to: '/dashboard',     label: 'Dashboard',       permission: 'dashboard:view',        icon: '📊' },
+  { to: '/events',        label: 'Eventos',         permission: 'events:read',           icon: '🎯' },
+  { to: '/products',      label: 'Productos',       permission: 'products:read',         icon: '📦' },
+  { to: '/categories',    label: 'Categorías',      permission: 'categories:read',       icon: '🏷️' },
+  { to: '/inventory',     label: 'Inventario',      permission: 'inventory:read',        icon: '🏪' },
+  { to: '/sales',         label: 'Ventas',          permission: 'sales:read',            icon: '💰' },
+  { to: '/custody',       label: 'Custodia',        permission: 'custody:read',          icon: '🎫' },
+  { to: '/finance',       label: 'Finanzas',        permission: 'finance:read',          icon: '💵' },
+  { to: '/organizations', label: 'Organizaciones',  permission: 'organizations:read',    icon: '🏢' },
+  { to: '/users',         label: 'Usuarios',        permission: 'users:manage',          icon: '👥' },
+  { to: '/roles',         label: 'Roles',           permission: 'roles:manage',          icon: '🔑' },
+  { to: '/audit',         label: 'Auditoría',       permission: 'audit:read',            icon: '📋' },
 ];
 
 const Sidebar = () => {

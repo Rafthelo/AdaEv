@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import PageWrapper from '../../components/layout/PageWrapper';
 import Table       from '../../components/common/Table';
 import Button      from '../../components/common/Button';
@@ -46,39 +46,29 @@ const Events = () => {
   const [form,       setForm]       = useState(EMPTY_FORM);
   const [saving,     setSaving]     = useState(false);
   const [alert,      setAlert]      = useState({ type: '', message: '' });
-
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data } = await getEvents({ page, limit: 10, search });
-      setEvents(data.data);
-      setMeta(data.meta);
-    } catch {
-      setAlert({ type: 'error', message: 'Error al cargar eventos' });
-    } finally {
-      setLoading(false);
-    }
-  }, [page, search]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-  let cancelled = false;
-  const fetchEvents = async () => {
-    setLoading(true);
-    try {
-      const { data } = await getEvents({ page, limit: 10, search });
-      if (!cancelled) {
-        setEvents(data.data);
-        setMeta(data.meta);
+    let cancelled = false;
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const { data } = await getEvents({ page, limit: 10, search });
+        if (!cancelled) {
+          setEvents(data.data);
+          setMeta(data.meta);
+        }
+      } catch {
+        if (!cancelled) setAlert({ type: 'error', message: 'Error al cargar eventos' });
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch {
-      if (!cancelled) setAlert({ type: 'error', message: 'Error al cargar eventos' });
-    } finally {
-      if (!cancelled) setLoading(false);
-    }
-  };
-  fetchEvents();
-  return () => { cancelled = true; };
-}, [page, search]);
+    };
+    fetchEvents();
+    return () => { cancelled = true; };
+  }, [page, search, refreshKey]);
+
+  const isLocked = editing && ['closed', 'cancelled'].includes(editing.status);
 
   const openCreate = () => {
     setEditing(null);
@@ -94,7 +84,7 @@ const Events = () => {
       location:    event.location    || '',
       starts_at:   event.starts_at?.slice(0, 16) || '',
       ends_at:     event.ends_at?.slice(0, 16)   || '',
-      status:      event.status,
+      status:      ['closed', 'cancelled'].includes(event.status) ? 'active' : event.status,
     });
     setModalOpen(true);
   };
@@ -107,11 +97,14 @@ const Events = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = {
-        ...form,
-        starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : undefined,
-        ends_at:   form.ends_at   ? new Date(form.ends_at).toISOString()   : undefined,
-      };
+      const payload = isLocked
+        ? { status: form.status }
+        : {
+            ...form,
+            starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : undefined,
+            ends_at:   form.ends_at   ? new Date(form.ends_at).toISOString()   : undefined,
+          };
+
       if (editing) {
         await updateEvent(editing.id, payload);
         setAlert({ type: 'success', message: 'Evento actualizado exitosamente' });
@@ -120,7 +113,7 @@ const Events = () => {
         setAlert({ type: 'success', message: 'Evento creado exitosamente' });
       }
       setModalOpen(false);
-      fetchEvents();
+      setRefreshKey((k) => k + 1);
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al guardar' });
     } finally {
@@ -196,45 +189,56 @@ const Events = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Nombre"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            placeholder="Nombre del evento"
-          />
-          <Input
-            label="Descripción"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Descripción opcional"
-          />
-          <Input
-            label="Lugar"
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            placeholder="Ubicación del evento"
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Fecha de inicio"
-              name="starts_at"
-              type="datetime-local"
-              value={form.starts_at}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Fecha de fin"
-              name="ends_at"
-              type="datetime-local"
-              value={form.ends_at}
-              onChange={handleChange}
-            />
-          </div>
+          {isLocked && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm">
+              Este evento está {editing.status === 'closed' ? 'cerrado' : 'cancelado'}. Solo puedes cambiar su estado para reabrirlo.
+            </div>
+          )}
+
+          {!isLocked && (
+            <>
+              <Input
+                label="Nombre"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+                placeholder="Nombre del evento"
+              />
+              <Input
+                label="Descripción"
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                placeholder="Descripción opcional"
+              />
+              <Input
+                label="Lugar"
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="Ubicación del evento"
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Fecha de inicio"
+                  name="starts_at"
+                  type="datetime-local"
+                  value={form.starts_at}
+                  onChange={handleChange}
+                  required
+                />
+                <Input
+                  label="Fecha de fin"
+                  name="ends_at"
+                  type="datetime-local"
+                  value={form.ends_at}
+                  onChange={handleChange}
+                />
+              </div>
+            </>
+          )}
+
           {editing && (
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">Estado</label>
@@ -244,14 +248,25 @@ const Events = () => {
                 onChange={handleChange}
                 className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="draft">Borrador</option>
-                <option value="active">Activo</option>
-                <option value="paused">Pausado</option>
-                <option value="closed">Cerrado</option>
-                <option value="cancelled">Cancelado</option>
+                {isLocked ? (
+                  <>
+                    <option value="draft">Borrador</option>
+                    <option value="active">Activo</option>
+                    <option value="paused">Pausado</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="draft">Borrador</option>
+                    <option value="active">Activo</option>
+                    <option value="paused">Pausado</option>
+                    <option value="closed">Cerrado</option>
+                    <option value="cancelled">Cancelado</option>
+                  </>
+                )}
               </select>
             </div>
           )}
+
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancelar</Button>
             <Button type="submit" loading={saving}>

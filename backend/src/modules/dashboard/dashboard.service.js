@@ -1,118 +1,139 @@
 const pool = require('../../config/database');
 
+const getActiveEvents = async () => {
+  const [rows] = await pool.execute(
+    `SELECT id, name, starts_at, ends_at
+     FROM events
+     WHERE status = 'active'
+     ORDER BY starts_at DESC`
+  );
+  return rows;
+};
+
 const getStats = async (eventId = null) => {
-  let eventWhere = '';
-  const params = [];
+  let eventWhere    = eventId ? 'AND event_id = ?' : '';
+  let eventWhereRaw = eventId ? 'AND event_id = ?' : '';
+  const p = eventId ? [eventId] : [];
 
-  if (eventId) {
-    eventWhere = 'AND event_id = ?';
-    params.push(eventId);
-  }
-
-  // Ventas del día
+  // Ventas del evento
   const [[salesStats]] = await pool.execute(
     `SELECT
-       COUNT(*)            AS total_sales,
-       COALESCE(SUM(total), 0) AS total_revenue,
-       COALESCE(AVG(total), 0) AS avg_sale
+       COUNT(*)                AS total_sales,
+       COALESCE(SUM(total), 0) AS total_revenue
      FROM sales
      WHERE status = 'completed'
-       AND DATE(created_at) = CURDATE()
+       AND order_status IN ('completed', 'delivered')
        ${eventWhere}`,
-    params
+    p
   );
 
-  // Ventas totales
-  const [[allSalesStats]] = await pool.execute(
-    `SELECT
-       COUNT(*)                AS total_sales_all,
-       COALESCE(SUM(total), 0) AS total_revenue_all
-     FROM sales
-     WHERE status = 'completed'
-       ${eventWhere}`,
-    params
+  // Custodia activa
+  const [[custodyStats]] = await pool.execute(
+    `SELECT COUNT(*) AS total_active
+     FROM custody_items
+     WHERE status = 'active'
+       ${eventWhereRaw}`,
+    p
   );
 
-  // Productos con stock bajo
-  const [lowStockItems] = await pool.execute(
-    `SELECT
-       i.id, i.quantity, i.min_stock,
-       p.name AS product_name, p.sku,
-       e.name AS event_name
+  // Stock bajo
+  const [[lowStockStats]] = await pool.execute(
+    `SELECT COUNT(*) AS total_low
      FROM inventory i
-     JOIN products p    ON i.product_id = p.id
-     LEFT JOIN events e ON i.event_id   = e.id
      WHERE i.quantity <= i.min_stock
        AND i.min_stock > 0
-     ORDER BY i.quantity ASC
-     LIMIT 10`
+       ${eventId ? 'AND i.event_id = ?' : ''}`,
+    p
+  );
+
+  // Vendedores activos asignados al evento
+  const [[sellersStats]] = await pool.execute(
+    `SELECT COUNT(*) AS total_sellers
+     FROM users
+     WHERE seller_type IS NOT NULL
+       AND is_active = 1
+       AND deleted_at IS NULL
+       ${eventId ? 'AND assigned_event_id = ?' : ''}`,
+    p
   );
 
   // Últimas 5 ventas
   const [recentSales] = await pool.execute(
     `SELECT
-       s.id, s.total, s.status, s.created_at,
-       u.username AS cashier_username,
-       e.name     AS event_name
+       s.id, s.total, s.created_at,
+       u.username AS seller_username,
+       (SELECT GROUP_CONCAT(p.sku SEPARATOR ', ')
+          FROM sale_items si
+          JOIN products p ON si.product_id = p.id
+          WHERE si.sale_id = s.id) AS product_codes
      FROM sales s
-     LEFT JOIN users u  ON s.user_id  = u.id
-     LEFT JOIN events e ON s.event_id = e.id
+     LEFT JOIN users u ON s.user_id = u.id
      WHERE s.status = 'completed'
+       AND s.order_status IN ('completed', 'delivered')
        ${eventWhere}
      ORDER BY s.created_at DESC
      LIMIT 5`,
-    params
+    p
   );
 
-  // Eventos activos
-  const [[{ active_events }]] = await pool.execute(
-    `SELECT COUNT(*) AS active_events FROM events WHERE status = 'active'`
-  );
-
-  // Sesiones de caja abiertas
-  const [[{ open_sessions }]] = await pool.execute(
-    `SELECT COUNT(*) AS open_sessions FROM cash_sessions WHERE status = 'open'`
-  );
-
-  // Usuarios activos
-  const [[{ active_users }]] = await pool.execute(
-    `SELECT COUNT(*) AS active_users FROM users WHERE is_active = 1`
-  );
-
-  // Ventas por hora (últimas 8 horas)
-  const [salesByHour] = await pool.execute(
+  // Rendimiento por vendedor
+  const [sellerPerformance] = await pool.execute(
     `SELECT
-       HOUR(created_at)        AS hour,
-       COUNT(*)                AS count,
-       COALESCE(SUM(total), 0) AS revenue
-     FROM sales
-     WHERE status = 'completed'
-       AND created_at >= DATE_SUB(NOW(), INTERVAL 8 HOUR)
-       ${eventWhere}
-     GROUP BY HOUR(created_at)
-     ORDER BY hour ASC`,
-    params
+       u.username,
+       u.seller_type,
+       COUNT(s.id)             AS total_sales,
+       COALESCE(SUM(s.total), 0) AS total_revenue
+     FROM users u
+     LEFT JOIN sales s ON s.user_id = u.id
+       AND s.status = 'completed'
+       AND s.order_status IN ('completed', 'delivered')
+       ${eventId ? 'AND s.event_id = ?' : ''}
+     WHERE u.seller_type IS NOT NULL
+       AND u.is_active = 1
+       AND u.deleted_at IS NULL
+       ${eventId ? 'AND u.assigned_event_id = ?' : ''}
+     GROUP BY u.id, u.username, u.seller_type
+     ORDER BY total_revenue DESC`,
+    eventId ? [eventId, eventId] : []
   );
+
+  // Stock bajo — detalle
+  const [lowStockItems] = await pool.execute(
+    `SELECT
+       i.quantity, i.min_stock,
+       p.name AS product_name, p.sku
+     FROM inventory i
+     JOIN products p ON i.product_id = p.id
+     WHERE i.quantity <= i.min_stock
+       AND i.min_stock > 0
+       ${eventId ? 'AND i.event_id = ?' : ''}
+     ORDER BY i.quantity ASC
+     LIMIT 5`,
+    p
+  );
+
+  const SELLER_TYPE_LABELS = {
+    independent: 'Independiente',
+    waiter:      'Mesero',
+    bartender:   'Bartender',
+  };
 
   return {
-    today: {
-      total_sales:    parseInt(salesStats.total_sales),
-      total_revenue:  parseFloat(salesStats.total_revenue),
-      avg_sale:       parseFloat(salesStats.avg_sale),
+    summary: {
+      total_sales:     parseInt(salesStats.total_sales),
+      total_revenue:   parseFloat(salesStats.total_revenue),
+      custody_active:  parseInt(custodyStats.total_active),
+      low_stock:       parseInt(lowStockStats.total_low),
+      active_sellers:  parseInt(sellersStats.total_sellers),
     },
-    all_time: {
-      total_sales:   parseInt(allSalesStats.total_sales_all),
-      total_revenue: parseFloat(allSalesStats.total_revenue_all),
-    },
-    system: {
-      active_events:  parseInt(active_events),
-      open_sessions:  parseInt(open_sessions),
-      active_users:   parseInt(active_users),
-    },
-    low_stock:    lowStockItems,
     recent_sales: recentSales,
-    sales_by_hour: salesByHour,
+    seller_performance: sellerPerformance.map((s) => ({
+      ...s,
+      seller_type_label: SELLER_TYPE_LABELS[s.seller_type] || s.seller_type,
+      total_revenue: parseFloat(s.total_revenue),
+    })),
+    low_stock_items: lowStockItems,
   };
 };
 
-module.exports = { getStats };
+module.exports = { getActiveEvents, getStats };

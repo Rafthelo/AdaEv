@@ -4,7 +4,8 @@ const findUserByUsername = async (username) => {
   const [rows] = await pool.execute(
     `SELECT
        u.id, u.username, u.email, u.password_hash,
-       u.first_name, u.last_name, u.is_active, u.last_login_at
+       u.first_name, u.last_name, u.is_active, u.last_login_at,
+       u.seller_type, u.assigned_event_id
      FROM users u
      WHERE u.username = ?`,
     [username]
@@ -16,7 +17,8 @@ const findUserById = async (id) => {
   const [rows] = await pool.execute(
     `SELECT
        u.id, u.username, u.email,
-       u.first_name, u.last_name, u.is_active
+       u.first_name, u.last_name, u.is_active,
+       u.seller_type, u.assigned_event_id
      FROM users u
      WHERE u.id = ?`,
     [id]

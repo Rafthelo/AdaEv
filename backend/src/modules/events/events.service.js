@@ -46,10 +46,22 @@ const update = async (id, data, updatedBy, meta = {}) => {
   }
 
   if (CLOSED_STATUSES.includes(existing.status)) {
-    throw Object.assign(
-      new Error('No se puede modificar un evento cerrado o cancelado'),
-      { statusCode: 422, code: 'BUSINESS_ERROR' }
-    );
+    // Evento cerrado/cancelado: solo se permite cambiar el status (reabrir)
+    const onlyStatusChange = Object.keys(data).every((key) => key === 'status');
+
+    if (!onlyStatusChange) {
+      throw Object.assign(
+        new Error('Un evento cerrado o cancelado solo puede cambiar su estado (reabrir)'),
+        { statusCode: 422, code: 'BUSINESS_ERROR' }
+      );
+    }
+
+    if (!data.status || CLOSED_STATUSES.includes(data.status)) {
+      throw Object.assign(
+        new Error('Debes seleccionar un estado activo para reabrir el evento'),
+        { statusCode: 422, code: 'BUSINESS_ERROR' }
+      );
+    }
   }
 
   await eventsRepository.update(id, data);

@@ -17,3 +17,6 @@ export const changePassword = (id, data) =>
 
 export const deactivateUser = (id) =>
   api.patch(`/users/${id}/deactivate`);
+
+export const deleteUser = (id) =>
+  api.delete(`/users/${id}`);

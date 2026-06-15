@@ -14,3 +14,14 @@ export const voidSale = (id, data) =>
 
 export const getSalesStats = (params) =>
   api.get('/sales/stats', { params });
+
+export const confirmDelivery = (id, code) =>
+  api.patch(`/sales/${id}/deliver`, { code });
+
+export const getPendingOrders = () =>
+  api.get('/sales/pending-orders');
+
+export const markReady = (id) =>
+  api.patch(`/sales/${id}/ready`);
+export const getReadyOrders = () =>
+  api.get('/sales/ready-orders');

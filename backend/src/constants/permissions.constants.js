@@ -25,6 +25,16 @@ const PERMISSIONS = {
   SALES_READ:   'sales:read',
   SALES_CREATE: 'sales:create',
   SALES_VOID:   'sales:void',
+  SALES_READ_ALL: 'sales:read_all',
+  SALES_VOID_ALL: 'sales:void_all',
+  SALES_PREPARE: 'sales:prepare',
+  SALES_CONFIRM_DELIVERY: 'sales:confirm_delivery',
+  
+  // Custody
+  CUSTODY_CREATE: 'custody:create',
+  CUSTODY_READ:   'custody:read',
+  CUSTODY_RETURN: 'custody:return',
+  CUSTODY_MANAGE: 'custody:manage',
 
   // Cash Register
   CASH_OPEN:     'cash:open',
@@ -43,6 +53,14 @@ const PERMISSIONS = {
 
   // Dashboard
   DASHBOARD_VIEW: 'dashboard:view',
+
+  // Gestion financiera
+  FINANCE_READ:          'finance:read',
+  FINANCE_CREATE:        'finance:create',
+  FINANCE_DELETE:        'finance:delete',
+  FINANCE_SUMMARY:       'finance:summary',
+  ORGANIZATIONS_READ:    'organizations:read',
+  ORGANIZATIONS_MANAGE:  'organizations:manage',
 };
 
 module.exports = { PERMISSIONS };

@@ -4,7 +4,7 @@ const { getPagination, getPaginationMeta } = require('../../helpers/pagination.h
 const findAll = async (filters = {}, query = {}) => {
   const { page, limit, offset } = getPagination(query);
 
-  let where = 'WHERE 1=1';
+  let where = 'WHERE u.deleted_at IS NULL';
   const params = [];
 
   if (filters.search) {
@@ -19,12 +19,15 @@ const findAll = async (filters = {}, query = {}) => {
 
   const [rows] = await pool.execute(
     `SELECT
-       u.id, u.username, u.email, u.first_name, u.last_name,
-       u.is_active, u.last_login_at, u.created_at
-     FROM users u
-     ${where}
-     ORDER BY u.created_at DESC
-     LIMIT ${limit} OFFSET ${offset}`,
+      u.id, u.username, u.email, u.first_name, u.last_name,
+      u.seller_type, u.assigned_event_id,
+      e.name AS assigned_event_name,
+      u.is_active, u.last_login_at, u.created_at
+    FROM users u
+    LEFT JOIN events e ON u.assigned_event_id = e.id
+    ${where}
+    ORDER BY u.created_at DESC
+    LIMIT ${limit} OFFSET ${offset}`,
     params
   );
 
@@ -40,36 +43,42 @@ const findById = async (id) => {
   const [rows] = await pool.execute(
     `SELECT
        u.id, u.username, u.email, u.first_name, u.last_name,
+       u.seller_type, u.assigned_event_id,
+       e.name AS assigned_event_name,
        u.is_active, u.last_login_at, u.created_at, u.updated_at
      FROM users u
-     WHERE u.id = ?`,
+     LEFT JOIN events e ON u.assigned_event_id = e.id
+     WHERE u.id = ? AND u.deleted_at IS NULL`,
     [id]
   );
   return rows[0] || null;
 };
 
 const findByUsername = async (username) => {
-  const [rows] = await pool.execute(
-    `SELECT id FROM users WHERE username = ?`,
-    [username]
-  );
+const [rows] = await pool.execute(
+  `SELECT id FROM users WHERE username = ? AND deleted_at IS NULL`,
+  [username]
+);
   return rows[0] || null;
 };
 
 const findByEmail = async (email) => {
-  const [rows] = await pool.execute(
-    `SELECT id FROM users WHERE email = ?`,
-    [email]
-  );
+const [rows] = await pool.execute(
+  `SELECT id FROM users WHERE email = ? AND deleted_at IS NULL`,
+  [email]
+);
   return rows[0] || null;
 };
 
 const create = async (data, conn = null) => {
   const db = conn || pool;
   const [result] = await db.execute(
-    `INSERT INTO users (username, email, password_hash, first_name, last_name)
-     VALUES (?, ?, ?, ?, ?)`,
-    [data.username, data.email, data.password_hash, data.first_name, data.last_name]
+    `INSERT INTO users (username, email, password_hash, first_name, last_name, seller_type, assigned_event_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      data.username, data.email, data.password_hash, data.first_name, data.last_name,
+      data.seller_type || null, data.assigned_event_id || null,
+    ]
   );
   return result.insertId;
 };
@@ -83,6 +92,8 @@ const update = async (id, data) => {
   if (typeof data.last_name  !== 'undefined') { fields.push('last_name = ?');  params.push(data.last_name); }
   if (typeof data.is_active  !== 'undefined') { fields.push('is_active = ?');  params.push(data.is_active); }
   if (typeof data.password_hash !== 'undefined') { fields.push('password_hash = ?'); params.push(data.password_hash); }
+  if (typeof data.seller_type !== 'undefined') { fields.push('seller_type = ?'); params.push(data.seller_type || null); }
+  if (typeof data.assigned_event_id !== 'undefined') { fields.push('assigned_event_id = ?'); params.push(data.assigned_event_id || null); }
 
   if (fields.length === 0) return;
 
@@ -122,15 +133,14 @@ const findPasswordHash = async (id) => {
   );
   return rows[0]?.password_hash || null;
 };
-
+const softDelete = async (id) => {
+  await pool.execute(
+    `UPDATE users SET deleted_at = NOW() WHERE id = ?`,
+    [id]
+  );
+};
 module.exports = {
-  findAll,
-  findById,
-  findByUsername,
-  findByEmail,
-  create,
-  update,
-  assignRoles,
-  getUserRoles,
-  findPasswordHash,
+  findAll, findById, findByUsername, findByEmail,
+  create, update, assignRoles, getUserRoles,
+  findPasswordHash, softDelete,
 };

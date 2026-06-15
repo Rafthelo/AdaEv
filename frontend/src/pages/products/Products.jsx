@@ -30,6 +30,7 @@ const Products = () => {
   const [form,        setForm]        = useState(EMPTY_FORM);
   const [saving,      setSaving]      = useState(false);
   const [alert,       setAlert]       = useState({ type: '', message: '' });
+  const [refreshKey,  setRefreshKey]  = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +47,7 @@ const Products = () => {
     };
     fetch();
     return () => { cancelled = true; };
-  }, [page, search]);
+  }, [page, search, refreshKey]);
 
   useEffect(() => {
     api.get('/categories').then(({ data }) => setCategories(data.data || [])).catch(() => {});
@@ -90,7 +91,7 @@ const Products = () => {
         setAlert({ type: 'success', message: 'Producto creado exitosamente' });
       }
       setModalOpen(false);
-      setPage(1);
+      setRefreshKey((k) => k + 1);
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al guardar' });
     } finally {
@@ -103,12 +104,20 @@ const Products = () => {
     try {
       await deactivateProduct(id);
       setAlert({ type: 'success', message: 'Producto desactivado' });
-      setPage(1);
+      setRefreshKey((k) => k + 1);
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al desactivar' });
     }
   };
-
+const handleActivate = async (id) => {
+  try {
+    await updateProduct(id, { is_active: true });
+    setAlert({ type: 'success', message: 'Producto activado' });
+    setRefreshKey((k) => k + 1);
+  } catch (err) {
+    setAlert({ type: 'error', message: err.response?.data?.message || 'Error al activar' });
+  }
+};
   const columns = [
     { key: 'name',          label: 'Nombre',     render: (r) => <span className="font-medium text-gray-800">{r.name}</span> },
     { key: 'sku',           label: 'SKU',        render: (r) => r.sku || '—' },
@@ -125,9 +134,12 @@ const Products = () => {
           {can('products:delete') && r.is_active === 1 && (
             <Button size="sm" variant="danger" onClick={() => handleDeactivate(r.id)}>Desactivar</Button>
           )}
+          {can('products:update') && r.is_active === 0 && (
+            <Button size="sm" variant="success" onClick={() => handleActivate(r.id)}>Activar</Button>
+          )}
         </div>
       )
-    },
+},
   ];
 
   return (
@@ -144,7 +156,7 @@ const Products = () => {
             type="text"
             placeholder="Buscar producto o SKU..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => { setSearch(e.target.value); setRefreshKey((k) => k + 1);; }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
           {can('products:create') && (

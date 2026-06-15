@@ -47,6 +47,10 @@ app.use('/api/v1/inventory', require('./modules/inventory/inventory.routes'));
 app.use('/api/v1/sales', require('./modules/sales/sales.routes'));
 app.use('/api/v1/cash-registers', require('./modules/cash-register/cash-register.routes'));
 app.use('/api/v1/dashboard', require('./modules/dashboard/dashboard.routes'));
+app.use('/uploads', require('express').static(require('path').join(__dirname, '../uploads')));
+app.use('/api/v1/custody', require('./modules/custody/custody.routes'));
+app.use('/api/v1/finance',       require('./modules/finance/finance.routes'));
+app.use('/api/v1/organizations', require('./modules/organizations/organizations.routes'));
 app.use('/api/v1/audit', require('./modules/audit/audit.routes'));
 
 // === Error Handler (siempre último) ===

@@ -82,16 +82,17 @@ const create = async (data) => {
   );
   return result.insertId;
 };
-
 const update = async (id, data) => {
+  const toMysql = (d) => d ? new Date(d).toISOString().slice(0, 19).replace('T', ' ') : null;
+
   const fields = [];
   const params = [];
 
   if (typeof data.name        !== 'undefined') { fields.push('name = ?');        params.push(data.name); }
   if (typeof data.description !== 'undefined') { fields.push('description = ?'); params.push(data.description); }
   if (typeof data.location    !== 'undefined') { fields.push('location = ?');    params.push(data.location); }
-  if (typeof data.starts_at   !== 'undefined') { fields.push('starts_at = ?');   params.push(data.starts_at); }
-  if (typeof data.ends_at     !== 'undefined') { fields.push('ends_at = ?');     params.push(data.ends_at); }
+  if (typeof data.starts_at   !== 'undefined') { fields.push('starts_at = ?');   params.push(toMysql(data.starts_at)); }
+  if (typeof data.ends_at     !== 'undefined') { fields.push('ends_at = ?');     params.push(toMysql(data.ends_at)); }
   if (typeof data.status      !== 'undefined') { fields.push('status = ?');      params.push(data.status); }
   if (typeof data.is_active   !== 'undefined') { fields.push('is_active = ?');   params.push(data.is_active); }
 
