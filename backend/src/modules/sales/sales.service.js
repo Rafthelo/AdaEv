@@ -242,7 +242,9 @@ const confirmDelivery = async (id, userId, code, meta = {}) => {
   }
 
   await salesRepository.markDelivered(id);
-
+try {
+  getIO().to(`event:${sale.event_id}`).emit('order:delivered', { saleId: id });
+} catch (e) {}
   await auditService.log({
     user_id:    userId,
     action:     'sales:confirm_delivery',

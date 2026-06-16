@@ -51,6 +51,7 @@ app.use('/uploads', require('express').static(require('path').join(__dirname, '.
 app.use('/api/v1/custody', require('./modules/custody/custody.routes'));
 app.use('/api/v1/finance',       require('./modules/finance/finance.routes'));
 app.use('/api/v1/organizations', require('./modules/organizations/organizations.routes'));
+app.use('/api/v1/reports', require('./modules/reports/reports.routes'));
 app.use('/api/v1/audit', require('./modules/audit/audit.routes'));
 
 // === Error Handler (siempre último) ===

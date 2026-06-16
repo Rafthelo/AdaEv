@@ -37,8 +37,8 @@ module.exports = {
   frontendUrl:   process.env.FRONTEND_URL,
   bcryptRounds:  parseInt(process.env.BCRYPT_ROUNDS) || 12,
   rateLimit: {
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 900000,
-    max:      parseInt(process.env.RATE_LIMIT_MAX) || 5,
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 300000,
+    max:      parseInt(process.env.RATE_LIMIT_MAX) || 10,
   },
   adaos: {
     apiUrl:   process.env.ADAOS_API_URL || '',

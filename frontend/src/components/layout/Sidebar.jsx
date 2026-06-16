@@ -11,9 +11,11 @@ const navItems = [
   { to: '/custody',       label: 'Custodia',        permission: 'custody:read',          icon: '🎫' },
   { to: '/finance',       label: 'Finanzas',        permission: 'finance:read',          icon: '💵' },
   { to: '/organizations', label: 'Organizaciones',  permission: 'organizations:read',    icon: '🏢' },
+  { to: '/reports',       label: 'Reportes',        permission: 'sales:read_all',        icon: '📊' },
   { to: '/users',         label: 'Usuarios',        permission: 'users:manage',          icon: '👥' },
   { to: '/roles',         label: 'Roles',           permission: 'roles:manage',          icon: '🔑' },
   { to: '/audit',         label: 'Auditoría',       permission: 'audit:read',            icon: '📋' },
+  
 ];
 
 const Sidebar = () => {

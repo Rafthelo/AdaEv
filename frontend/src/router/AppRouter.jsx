@@ -18,6 +18,7 @@ import Custody from '../pages/custody/Custody';
 import Finance       from '../pages/finance/Finance';
 import Organizations from '../pages/organizations/Organizations';
 import Profile from '../pages/profile/Profile';
+import Reports from '../pages/reports/Reports';
 
 const AppRouter = () => {
   return (
@@ -138,7 +139,17 @@ const AppRouter = () => {
   <PrivateRoute>
     <Profile />
   </PrivateRoute>
+  
 } />
+
+<Route path="/reports" element={
+  <PrivateRoute>
+    <PermissionRoute permission="sales:read_all">
+      <Reports />
+    </PermissionRoute>
+  </PrivateRoute>
+} />
+
         {/* 404 */}
         <Route path="*" element={<HomeRedirect />} />
       </Routes>

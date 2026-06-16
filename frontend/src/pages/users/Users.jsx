@@ -122,7 +122,7 @@ const Users = () => {
         setAlert({ type: 'success', message: 'Usuario creado exitosamente' });
       }
       setModalOpen(false);
-      setPage(1);
+      setRefreshKey((k) => k + 1)
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al guardar' });
     } finally {
@@ -135,7 +135,7 @@ const Users = () => {
     try {
       await deactivateUser(id);
       setAlert({ type: 'success', message: 'Usuario desactivado' });
-      setPage(1);
+      setRefreshKey((k) => k + 1)
     } catch (err) {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al desactivar' });
     }
@@ -202,7 +202,7 @@ const handleDelete = async (id) => {
             type="text"
             placeholder="Buscar usuario..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => { setSearch(e.target.value);  setRefreshKey((k) => k + 1); }}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
           {can('users:manage') && (

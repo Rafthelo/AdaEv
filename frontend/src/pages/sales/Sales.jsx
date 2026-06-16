@@ -11,6 +11,8 @@ import usePermissions from '../../hooks/usePermissions';
 import useAuth from '../../hooks/useAuth';
 import { getSales, createSale, voidSale, confirmDelivery, getPendingOrders, getReadyOrders, markReady } from '../../api/endpoints/sales.api';import { getEvents } from '../../api/endpoints/events.api';
 import { getProducts } from '../../api/endpoints/products.api';
+import { useContext } from 'react';
+import { SocketContext } from '../../context/SocketContext';
 
 const STATUS_COLORS = { completed: 'green', voided: 'red', pending: 'yellow' };
 const STATUS_LABELS = { completed: 'Completada', voided: 'Anulada', pending: 'Pendiente' };
@@ -23,6 +25,7 @@ const { can } = usePermissions();
 const { user } = useAuth();
 const isSeller = !!user?.seller_type;
 const canGiveCourtesy = user?.seller_type === 'bartender' || user?.seller_type === 'independent';
+const socketCtx = useContext(SocketContext);
 
 const [sales,       setSales]       = useState([]);
 const [events,      setEvents]      = useState([]);
@@ -95,7 +98,37 @@ const handleMarkReady = async (id) => {
   }
 };
 
-  const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITEM }] }));
+useEffect(() => {
+  if (!socketCtx?.socket) return;
+
+  const handleOrderCreated = () => {
+    if (canPrepare) loadPendingOrders();
+  };
+
+  const handleOrderReady = () => {
+    if (user?.seller_type === 'waiter') {
+      setRefreshKey((k) => k + 1);
+    }
+    if (canPrepare) loadPendingOrders();
+  };
+
+  const handleOrderDelivered = () => {
+    if (canPrepare) loadPendingOrders();
+    setRefreshKey((k) => k + 1);
+  };
+
+  socketCtx.socket.on('order:created',   handleOrderCreated);
+  socketCtx.socket.on('order:ready',     handleOrderReady);
+  socketCtx.socket.on('order:delivered', handleOrderDelivered);
+
+  return () => {
+    socketCtx.socket.off('order:created',   handleOrderCreated);
+    socketCtx.socket.off('order:ready',     handleOrderReady);
+    socketCtx.socket.off('order:delivered', handleOrderDelivered);
+  };
+}, [socketCtx?.socket, canPrepare, user?.seller_type]); // eslint-disable-line react-hooks/exhaustive-deps
+
+const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITEM }] }));
 
   const removeItem = (i) => setForm((f) => ({ ...f, items: f.items.filter((_, idx) => idx !== i) }));
 
@@ -222,7 +255,17 @@ const handleMarkReady = async (id) => {
   { key: 'cashier_username', label: 'Cajero',    render: (r) => r.cashier_username || '—' },
   { key: 'product_codes',    label: 'Productos', render: (r) => r.product_codes || '—' },
   { key: 'total',            label: 'Total',     render: (r) => <span className="font-bold text-green-600">Bs. {parseFloat(r.total).toFixed(2)}</span> },
-  { key: 'status',           label: 'Estado',    render: (r) => <Badge label={STATUS_LABELS[r.status]} color={STATUS_COLORS[r.status]} /> },
+ {
+  key: 'status', label: 'Estado',
+  render: (r) => {
+    if (r.order_status && r.order_status !== 'completed') {
+      const ORDER_LABELS = { pending: 'Pendiente', ready: 'Listo', delivered: 'Entregado' };
+      const ORDER_COLORS = { pending: 'yellow', ready: 'blue', delivered: 'green' };
+      return <Badge label={ORDER_LABELS[r.order_status]} color={ORDER_COLORS[r.order_status]} />;
+    }
+    return <Badge label={STATUS_LABELS[r.status]} color={STATUS_COLORS[r.status]} />;
+  }
+},
   { key: 'created_at',       label: 'Fecha',     render: (r) => new Date(r.created_at).toLocaleString('es-BO') },
   {
     key: 'actions', label: 'Acciones', width: '120px',
