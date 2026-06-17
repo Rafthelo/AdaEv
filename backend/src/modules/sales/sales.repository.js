@@ -31,7 +31,7 @@ const findAll = async (filters = {}, query = {}) => {
 const [rows] = await pool.execute(
   `SELECT
      s.id, s.event_id, s.user_id, s.total, s.status,
-     s.order_status, s.confirmation_code,
+     s.order_status, s.confirmation_code, s.display_code,
      s.notes, s.created_at,
      u.username AS cashier_username,
      e.name AS event_name,
@@ -60,7 +60,7 @@ const findById = async (id) => {
   const [rows] = await pool.execute(
     `SELECT
        s.id, s.event_id, s.user_id, s.total, s.status,
-       s.order_status, s.confirmation_code, s.prepared_by, s.ready_at, s.delivered_at,
+       s.order_status, s.confirmation_code, s.display_code, s.prepared_by, s.ready_at, s.delivered_at,
        s.notes, s.voided_at, s.void_reason, s.created_at, s.updated_at,
        u.username  AS cashier_username,
        e.name      AS event_name,
@@ -90,15 +90,33 @@ const getSaleItems = async (saleId) => {
 
 const create = async (data, conn = null) => {
   const db = conn || pool;
+
+  let displayCode = null;
+  if (data.event_id) {
+    const [[eventData]] = await db.execute(
+      `SELECT prefix FROM events WHERE id = ?`,
+      [data.event_id]
+    );
+    if (eventData?.prefix) {
+      const [[countData]] = await db.execute(
+        `SELECT COUNT(*) AS cnt FROM sales WHERE event_id = ?`,
+        [data.event_id]
+      );
+      const nextNum = parseInt(countData.cnt) + 1;
+      displayCode = `${eventData.prefix}V-${String(nextNum).padStart(6, '0')}`;
+    }
+  }
+
   const [result] = await db.execute(
-    `INSERT INTO sales (event_id, user_id, total, status, order_status, notes)
-     VALUES (?, ?, ?, 'completed', ?, ?)`,
+    `INSERT INTO sales (event_id, user_id, total, status, order_status, notes, display_code)
+     VALUES (?, ?, ?, 'completed', ?, ?, ?)`,
     [
       data.event_id || null,
       data.user_id,
       data.total,
       data.order_status || 'completed',
       data.notes    || null,
+      displayCode,
     ]
   );
   return result.insertId;

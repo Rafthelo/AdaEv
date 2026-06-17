@@ -227,7 +227,7 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
     const ORDER_STATUS_COLORS = { pending: 'yellow', ready: 'blue', delivered: 'green', completed: 'green' };
 
     const columns = isSeller ? [
-      { key: 'id',            label: '#',       render: (r) => <span className="font-medium text-gray-800">#{r.id}</span> },
+      { key: 'id',            label: '#',       render: (r) => <span className="font-medium text-gray-800">{r.display_code || `#${r.id}`}</span> },
       { key: 'product_codes', label: 'Productos', render: (r) => r.product_codes || '—' },
       { key: 'total',         label: 'Total',   render: (r) => <span className="font-bold text-green-600">Bs. {parseFloat(r.total).toFixed(2)}</span> },
       {
@@ -250,7 +250,7 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
         )
       },
     ] : [
-  { key: 'id',               label: '#',         render: (r) => <span className="font-medium text-gray-800">#{r.id}</span> },
+  { key: 'id',               label: '#',         render: (r) => <span className="font-medium text-gray-800">{r.display_code || `#${r.id}`}</span> },
   { key: 'event_name',       label: 'Evento',    render: (r) => r.event_name || '—' },
   { key: 'cashier_username', label: 'Cajero',    render: (r) => r.cashier_username || '—' },
   { key: 'product_codes',    label: 'Productos', render: (r) => r.product_codes || '—' },

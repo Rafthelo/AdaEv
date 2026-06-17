@@ -53,8 +53,26 @@ const create = async (data, userId, meta = {}) => {
   return getById(id);
 };
 
-const remove = async (id, userId, meta = {}) => {
-  await getById(id);
+const update = async (id, data, userId, meta = {}) => {
+  const existing = await getById(id);
+  await financeRepository.update(id, data);
+
+  await auditService.log({
+    user_id:    userId,
+    action:     'finance:update',
+    entity:     'financial_movements',
+    entity_id:  id,
+    old_values: existing,
+    new_values: data,
+    ip_address: meta.ip,
+    user_agent: meta.userAgent,
+  });
+
+  return getById(id);
+};
+
+const remove = async (id, userId, reason, meta = {}) => {
+  const item = await getById(id);
   await financeRepository.remove(id);
 
   await auditService.log({
@@ -62,6 +80,8 @@ const remove = async (id, userId, meta = {}) => {
     action:     'finance:delete',
     entity:     'financial_movements',
     entity_id:  id,
+    old_values: item,
+    new_values: { delete_reason: reason },
     ip_address: meta.ip,
     user_agent: meta.userAgent,
   });
@@ -71,4 +91,4 @@ const getSummary = async (eventId) => {
   return financeRepository.getSummary(eventId);
 };
 
-module.exports = { getAll, getById, create, remove, getSummary, VALID_TYPES };
+module.exports = { getAll, getById, create, update, remove, getSummary };

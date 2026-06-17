@@ -3,6 +3,8 @@ const productsRepository = require('../products/products.repository');
 const auditService       = require('../audit/audit.service');
 const { getIO }          = require('../../config/socket');
 const { EVENT_STATUS }   = require('../../constants/events.constants');
+const eventSummaryService = require('../event-summary/event-summary.service');
+const { generateEventPrefix } = require('../../helpers/prefix.helper');
 
 const CLOSED_STATUSES = [EVENT_STATUS.CLOSED, EVENT_STATUS.CANCELLED];
 
@@ -24,8 +26,9 @@ const create = async (data, createdBy, meta = {}) => {
     throw Object.assign(new Error('Ya existe un evento con ese nombre'), { statusCode: 409, code: 'CONFLICT' });
   }
 
-  const id = await eventsRepository.create({ ...data, created_by: createdBy });
-
+  const prefix = await generateEventPrefix(data.name);
+  const id = await eventsRepository.create({ ...data, prefix, created_by: createdBy });
+  
   await auditService.log({
     user_id:    createdBy,
     action:     'events:create',
@@ -64,16 +67,26 @@ const update = async (id, data, updatedBy, meta = {}) => {
     }
   }
 
-  await eventsRepository.update(id, data);
+await eventsRepository.update(id, data);
 
-  // Notificar via Socket.IO si el estado cambia
-  if (data.status && data.status !== existing.status) {
+// Notificar via Socket.IO si el estado cambia
+if (data.status && data.status !== existing.status) {
+  try {
+    getIO().emit('event:status_changed', { eventId: id, status: data.status });
+  } catch (e) {
+    // Socket no crítico
+  }
+
+  // Generar resumen del evento al cerrarlo
+  if (data.status === EVENT_STATUS.CLOSED) {
     try {
-      getIO().emit('event:status_changed', { eventId: id, status: data.status });
+      await eventSummaryService.calculateAndSave(id, updatedBy);
     } catch (e) {
-      // Socket no crítico
+      console.error('Error al generar resumen del evento:', e.message);
+      // No bloqueamos el cierre del evento si falla el resumen
     }
   }
+}
 
   await auditService.log({
     user_id:    updatedBy,

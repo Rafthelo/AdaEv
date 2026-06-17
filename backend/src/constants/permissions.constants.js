@@ -4,6 +4,7 @@ const PERMISSIONS = {
   EVENTS_CREATE:  'events:create',
   EVENTS_UPDATE:  'events:update',
   EVENTS_DELETE:  'events:delete',
+  EVENTS_SUMMARY: 'events:summary',
 
   // Categories
   CATEGORIES_READ:   'categories:read',

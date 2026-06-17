@@ -12,7 +12,7 @@ echo   Respaldando base de datos AdaEv
 echo ===================================
 echo.
 
-mysqldump -u root -proot adaev > "%ARCHIVO%"
+mysqldump -u root -proot --set-gtid-purged=OFF --single-transaction adaev > "%ARCHIVO%"
 
 if %ERRORLEVEL% EQU 0 (
     echo.

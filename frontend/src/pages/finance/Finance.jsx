@@ -8,7 +8,7 @@ import Badge       from '../../components/common/Badge';
 import Alert       from '../../components/common/Alert';
 import Pagination  from '../../components/common/Pagination';
 import usePermissions from '../../hooks/usePermissions';
-import { getMovements, createMovement, deleteMovement, getFinanceSummary } from '../../api/endpoints/finance.api';
+import { getMovements, createMovement, updateMovement, deleteMovement, getFinanceSummary } from '../../api/endpoints/finance.api';
 import { getOrganizations } from '../../api/endpoints/organizations.api';
 import { getEvents }        from '../../api/endpoints/events.api';
 
@@ -79,6 +79,10 @@ const Finance = () => {
   const [filterEvent, setFilterEvent] = useState('');
   const [filterCat,   setFilterCat]   = useState('');
   const [modalOpen,   setModalOpen]   = useState(false);
+  const [editing,     setEditing]     = useState(null);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [deletingId,  setDeletingId]  = useState(null);
+  const [deleteReason, setDeleteReason] = useState('');
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [summary,     setSummary]     = useState(null);
   const [form,        setForm]        = useState(EMPTY_FORM);
@@ -120,42 +124,78 @@ const Finance = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const payload = {
-        event_id:            form.event_id            || null,
-        category:            form.category,
-        type:                form.type,
-        amount:              parseFloat(form.amount),
-        description:         form.description         || null,
-        date:                form.date,
-        organization_id:     form.organization_id     || null,
-        related_movement_id: form.related_movement_id || null,
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSaving(true);
+  try {
+    const payload = {
+      event_id:            form.event_id            || null,
+      category:            form.category,
+      type:                form.type,
+      amount:              parseFloat(form.amount),
+      description:         form.description         || null,
+      date:                form.date,
+      organization_id:     form.organization_id     || null,
+      related_movement_id: form.related_movement_id || null,
+    };
+
+    if (editing) {
+      await updateMovement(editing.id, payload);
+      setAlert({ type: 'success', message: 'Movimiento actualizado exitosamente' });
+    } else {
       await createMovement(payload);
       setAlert({ type: 'success', message: 'Movimiento registrado exitosamente' });
-      setModalOpen(false);
-      setForm(EMPTY_FORM);
-      setRefreshKey((k) => k + 1);
-    } catch (err) {
-      setAlert({ type: 'error', message: err.response?.data?.message || 'Error al registrar' });
-    } finally {
-      setSaving(false);
     }
-  };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar este movimiento?')) return;
-    try {
-      await deleteMovement(id);
-      setAlert({ type: 'success', message: 'Movimiento eliminado' });
-      setRefreshKey((k) => k + 1);
-    } catch (err) {
-      setAlert({ type: 'error', message: err.response?.data?.message || 'Error al eliminar' });
-    }
-  };
+    setModalOpen(false);
+    setEditing(null);
+    setForm(EMPTY_FORM);
+    setRefreshKey((k) => k + 1);
+  } catch (err) {
+    setAlert({ type: 'error', message: err.response?.data?.message || 'Error al guardar' });
+  } finally {
+    setSaving(false);
+  }
+};
+
+const openEdit = (movement) => {
+  setEditing(movement);
+  setForm({
+    event_id:            movement.event_id || '',
+    category:            movement.category,
+    type:                movement.type,
+    amount:              movement.amount,
+    description:         movement.description || '',
+    date:                movement.date?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+    organization_id:     movement.organization_id || '',
+    related_movement_id: movement.related_movement_id || '',
+  });
+  setModalOpen(true);
+};
+
+const openDelete = (id) => {
+  setDeletingId(id);
+  setDeleteReason('');
+  setDeleteModal(true);
+};
+
+const handleDelete = async () => {
+  if (!deleteReason.trim()) {
+    setAlert({ type: 'error', message: 'El motivo de eliminación es requerido' });
+    return;
+  }
+  setSaving(true);
+  try {
+    await deleteMovement(deletingId, deleteReason);
+    setAlert({ type: 'success', message: 'Movimiento eliminado exitosamente' });
+    setDeleteModal(false);
+    setRefreshKey((k) => k + 1);
+  } catch (err) {
+    setAlert({ type: 'error', message: err.response?.data?.message || 'Error al eliminar' });
+  } finally {
+    setSaving(false);
+  }
+};
 
   const openSummary = async () => {
     if (!filterEvent) {
@@ -179,12 +219,19 @@ const Finance = () => {
     { key: 'organization_name', label: 'Organización', render: (r) => r.organization_name || '—' },
     { key: 'event_name', label: 'Evento',   render: (r) => r.event_name || '—' },
     { key: 'amount',    label: 'Monto',     render: (r) => <span className={`font-bold ${r.category === 'expense' || r.category === 'return' ? 'text-red-600' : 'text-green-600'}`}>Bs. {parseFloat(r.amount).toFixed(2)}</span> },
-    {
-      key: 'actions', label: '', width: '80px',
-      render: (r) => can('finance:delete') && (
-        <Button size="sm" variant="danger" onClick={() => handleDelete(r.id)}>Eliminar</Button>
-      )
-    },
+{
+  key: 'actions', label: '', width: '160px',
+  render: (r) => (
+    <div className="flex gap-2">
+      {can('finance:create') && (
+        <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
+      )}
+      {can('finance:delete') && (
+        <Button size="sm" variant="danger" onClick={() => openDelete(r.id)}>Eliminar</Button>
+      )}
+    </div>
+  )
+},
   ];
 
   return (
@@ -221,11 +268,11 @@ const Finance = () => {
             {can('finance:summary') && (
               <Button variant="secondary" onClick={openSummary}>📊 Resumen del evento</Button>
             )}
-            {can('finance:create') && (
-              <Button onClick={() => { setForm(EMPTY_FORM); setModalOpen(true); }} icon="＋">
-                Nuevo movimiento
-              </Button>
-            )}
+{can('finance:create') && (
+  <Button onClick={() => { setEditing(null); setForm(EMPTY_FORM); setModalOpen(true); }} icon="＋">
+    Nuevo movimiento
+  </Button>
+)}
           </div>
         </div>
 
@@ -234,8 +281,7 @@ const Finance = () => {
       </div>
 
       {/* Modal Nuevo Movimiento */}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo Movimiento Financiero" size="lg">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Editar Movimiento Financiero' : 'Nuevo Movimiento Financiero'} size="lg"> <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">Evento</label>
@@ -304,8 +350,8 @@ const Finance = () => {
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancelar</Button>
-            <Button type="submit" loading={saving}>Registrar</Button>
-          </div>
+          <Button type="submit" loading={saving}>{editing ? 'Guardar cambios' : 'Registrar'}</Button>
+           </div>
         </form>
       </Modal>
 
@@ -425,6 +471,25 @@ const Finance = () => {
           </div>
         )}
       </Modal>
+      {/* Modal Eliminar con motivo */}
+<Modal isOpen={deleteModal} onClose={() => setDeleteModal(false)} title="Eliminar Movimiento" size="sm">
+  <div className="space-y-4">
+    <p className="text-sm text-gray-600">
+      Esta acción no se puede deshacer. Indica el motivo de la eliminación (quedará registrado en auditoría).
+    </p>
+    <Input
+      label="Motivo de eliminación"
+      value={deleteReason}
+      onChange={(e) => setDeleteReason(e.target.value)}
+      placeholder="Ej. Registrado por error, monto incorrecto..."
+      required
+    />
+    <div className="flex justify-end gap-3">
+      <Button variant="secondary" onClick={() => setDeleteModal(false)}>Cancelar</Button>
+      <Button variant="danger" onClick={handleDelete} loading={saving}>Confirmar Eliminación</Button>
+    </div>
+  </div>
+</Modal>
     </PageWrapper>
   );
 };

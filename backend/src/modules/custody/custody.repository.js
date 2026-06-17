@@ -1,6 +1,5 @@
 const pool = require('../../config/database');
 const { getPagination, getPaginationMeta } = require('../../helpers/pagination.helper');
-
 const findAll = async (filters = {}, query = {}) => {
   const { page, limit, offset } = getPagination(query);
 
@@ -27,7 +26,7 @@ const findAll = async (filters = {}, query = {}) => {
 
   const [rows] = await pool.execute(
     `SELECT
-       ci.id, ci.ticket_code, ci.event_id, ci.description,
+       ci.id, ci.ticket_code, ci.display_code, ci.event_id, ci.description,
        ci.observations, ci.price, ci.photo_url, ci.status,
        ci.received_at, ci.returned_at,
        u.username  AS operator_username,
@@ -54,7 +53,7 @@ const findAll = async (filters = {}, query = {}) => {
 const findById = async (id) => {
   const [rows] = await pool.execute(
     `SELECT
-       ci.id, ci.ticket_code, ci.event_id, ci.description,
+       ci.id, ci.ticket_code, ci.display_code, ci.event_id, ci.description,
        ci.observations, ci.price, ci.photo_url, ci.status,
        ci.received_at, ci.returned_at, ci.created_at, ci.updated_at,
        u.username  AS operator_username,
@@ -105,12 +104,24 @@ const findActiveByTicketAndEvent = async (ticketCode, eventId) => {
 };
 
 const create = async (data) => {
+  let displayCode = null;
+  if (data.event_id) {
+    const [[eventData]] = await pool.execute(
+      `SELECT prefix FROM events WHERE id = ?`,
+      [data.event_id]
+    );
+    if (eventData?.prefix) {
+      displayCode = `${eventData.prefix}C-${data.ticket_code}`;
+    }
+  }
+
   const [result] = await pool.execute(
     `INSERT INTO custody_items
-       (ticket_code, event_id, operator_id, description, observations, price, photo_url)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       (ticket_code, display_code, event_id, operator_id, description, observations, price, photo_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.ticket_code,
+      displayCode,
       data.event_id     || null,
       data.operator_id  || null,
       data.description,

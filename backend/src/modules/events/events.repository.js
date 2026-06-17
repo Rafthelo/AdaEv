@@ -21,18 +21,18 @@ const findAll = async (filters = {}, query = {}) => {
     params.push(filters.is_active);
   }
 
-  const [rows] = await pool.execute(
-    `SELECT
-       e.id, e.name, e.description, e.location,
-       e.starts_at, e.ends_at, e.status, e.is_active,
-       e.created_at, u.username AS created_by_username
-     FROM events e
-     LEFT JOIN users u ON e.created_by = u.id
-     ${where}
-     ORDER BY e.starts_at DESC
-     LIMIT ${limit} OFFSET ${offset}`,
-    params
-  );
+const [rows] = await pool.execute(
+  `SELECT
+     e.id, e.name, e.prefix, e.description, e.location,
+     e.starts_at, e.ends_at, e.status, e.is_active,
+     e.created_at, u.username AS created_by_username
+   FROM events e
+   LEFT JOIN users u ON e.created_by = u.id
+   ${where}
+   ORDER BY e.starts_at DESC
+   LIMIT ${limit} OFFSET ${offset}`,
+  params
+);
 
   const [[{ total }]] = await pool.execute(
     `SELECT COUNT(*) AS total FROM events e ${where}`,
@@ -43,17 +43,17 @@ const findAll = async (filters = {}, query = {}) => {
 };
 
 const findById = async (id) => {
-  const [rows] = await pool.execute(
-    `SELECT
-       e.id, e.name, e.description, e.location,
-       e.starts_at, e.ends_at, e.status, e.is_active,
-       e.created_at, e.updated_at,
-       u.username AS created_by_username
-     FROM events e
-     LEFT JOIN users u ON e.created_by = u.id
-     WHERE e.id = ?`,
-    [id]
-  );
+const [rows] = await pool.execute(
+  `SELECT
+     e.id, e.name, e.prefix, e.description, e.location,
+     e.starts_at, e.ends_at, e.status, e.is_active,
+     e.created_at, e.updated_at,
+     u.username AS created_by_username
+   FROM events e
+   LEFT JOIN users u ON e.created_by = u.id
+   WHERE e.id = ?`,
+  [id]
+);
   return rows[0] || null;
 };
 
@@ -68,10 +68,11 @@ const findByName = async (name) => {
 const create = async (data) => {
   const toMysql = (d) => d ? new Date(d).toISOString().slice(0, 19).replace('T', ' ') : null;
   const [result] = await pool.execute(
-    `INSERT INTO events (name, description, location, starts_at, ends_at, status, created_by)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO events (name, prefix, description, location, starts_at, ends_at, status, created_by)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.name,
+      data.prefix      || null,
       data.description || null,
       data.location    || null,
       toMysql(data.starts_at),
@@ -82,6 +83,7 @@ const create = async (data) => {
   );
   return result.insertId;
 };
+
 const update = async (id, data) => {
   const toMysql = (d) => d ? new Date(d).toISOString().slice(0, 19).replace('T', ' ') : null;
 

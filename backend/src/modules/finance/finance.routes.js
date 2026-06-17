@@ -28,6 +28,12 @@ router.post('/',
   financeController.create
 );
 
+router.put('/:id',
+  authMiddleware,
+  requirePermission(PERMISSIONS.FINANCE_CREATE),
+  financeController.update
+);
+
 router.delete('/:id',
   authMiddleware,
   requirePermission(PERMISSIONS.FINANCE_DELETE),

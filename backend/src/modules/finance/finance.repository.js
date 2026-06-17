@@ -99,6 +99,27 @@ const create = async (data) => {
   return result.insertId;
 };
 
+const update = async (id, data) => {
+  const fields = [];
+  const params = [];
+
+  if (typeof data.category            !== 'undefined') { fields.push('category = ?');            params.push(data.category); }
+  if (typeof data.type                !== 'undefined') { fields.push('type = ?');                 params.push(data.type); }
+  if (typeof data.amount              !== 'undefined') { fields.push('amount = ?');               params.push(data.amount); }
+  if (typeof data.description         !== 'undefined') { fields.push('description = ?');          params.push(data.description); }
+  if (typeof data.date                !== 'undefined') { fields.push('date = ?');                  params.push(data.date); }
+  if (typeof data.organization_id     !== 'undefined') { fields.push('organization_id = ?');       params.push(data.organization_id); }
+  if (typeof data.related_movement_id !== 'undefined') { fields.push('related_movement_id = ?');   params.push(data.related_movement_id); }
+
+  if (fields.length === 0) return;
+  params.push(id);
+
+  await pool.execute(
+    `UPDATE financial_movements SET ${fields.join(', ')} WHERE id = ?`,
+    params
+  );
+};
+
 const remove = async (id) => {
   await pool.execute(`DELETE FROM financial_movements WHERE id = ?`, [id]);
 };
@@ -184,4 +205,4 @@ const getSummary = async (eventId) => {
   };
 };
 
-module.exports = { CATEGORY_TYPES, findAll, findById, create, remove, getSummary };
+module.exports = { CATEGORY_TYPES, findAll, findById, create, update, remove, getSummary };

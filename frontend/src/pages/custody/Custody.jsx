@@ -43,7 +43,7 @@ const Custody = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [saving,      setSaving]      = useState(false);
   const fileRef   = useRef();
-const cameraRef = useRef();
+  const cameraRef = useRef();
 
   // Modal búsqueda por ticket
   const [searchModal,  setSearchModal]  = useState(false);
@@ -166,7 +166,7 @@ const cameraRef = useRef();
   };
 
   const columns = [
-    { key: 'ticket_code', label: 'Ticket',    render: (r) => <span className="font-bold text-blue-600">{r.ticket_code}</span> },
+    { key: 'ticket_code', label: 'Ticket',    render: (r) => <span className="font-bold text-blue-600">{r.display_code || r.ticket_code}</span> },
     { key: 'description', label: 'Descripción', render: (r) => <span className="text-gray-800">{r.description}</span> },
     { key: 'event_name',  label: 'Evento',    render: (r) => r.event_name || '—' },
     { key: 'operator_username', label: 'Operador', render: (r) => r.operator_username || '—' },
@@ -324,7 +324,7 @@ const cameraRef = useRef();
                 />
               )}
               <div className="p-4 space-y-2">
-                <p className="font-bold text-gray-800 text-lg">Ticket: {foundItem.ticket_code}</p>
+                <p className="font-bold text-gray-800 text-lg">Ticket: {foundItem.display_code || foundItem.ticket_code}</p>
                 <p className="text-gray-700">{foundItem.description}</p>
                 {foundItem.observations && <p className="text-sm text-gray-500">{foundItem.observations}</p>}
                 <p className={`font-bold text-lg ${parseFloat(foundItem.price) > 0 ? 'text-green-600' : 'text-gray-500'}`}>
@@ -358,7 +358,7 @@ const cameraRef = useRef();
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-gray-500">Ticket</p>
-                <p className="font-bold text-blue-600 text-lg">{detailItem.ticket_code}</p>
+                <p className="font-bold text-blue-600 text-lg">{detailItem.display_code || detailItem.ticket_code}</p>
               </div>
               <div>
                 <p className="text-gray-500">Estado</p>

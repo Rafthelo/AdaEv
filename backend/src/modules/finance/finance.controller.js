@@ -35,10 +35,25 @@ const create = async (req, res, next) => {
   }
 };
 
+const update = async (req, res, next) => {
+  try {
+    const meta = { ip: req.ip, userAgent: req.headers['user-agent'] };
+    const item = await financeService.update(req.params.id, req.body, req.user.id, meta);
+    return res.status(HTTP_STATUS.OK).json(successResponse(item, 'Movimiento actualizado exitosamente'));
+  } catch (error) {
+    next(error);
+  }
+};
+
 const remove = async (req, res, next) => {
   try {
     const meta = { ip: req.ip, userAgent: req.headers['user-agent'] };
-    await financeService.remove(req.params.id, req.user.id, meta);
+    if (!req.body.reason || !req.body.reason.trim()) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false, error: 'VALIDATION_ERROR', message: 'El motivo de eliminación es requerido',
+      });
+    }
+    await financeService.remove(req.params.id, req.user.id, req.body.reason, meta);
     return res.status(HTTP_STATUS.OK).json(successResponse(null, 'Movimiento eliminado'));
   } catch (error) {
     next(error);
@@ -60,4 +75,4 @@ const getSummary = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, getById, create, remove, getSummary };
+module.exports = { getAll, getById, create, update, remove, getSummary };
