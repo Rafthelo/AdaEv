@@ -74,13 +74,15 @@ const findByTicket = async (ticketCode, eventId = null) => {
   let query = `SELECT ci.*, e.name AS event_name
                FROM custody_items ci
                LEFT JOIN events e ON ci.event_id = e.id
-               WHERE ci.ticket_code = ? AND ci.status = 'active'`;
+               WHERE ci.ticket_code = ?`;
   const params = [ticketCode];
 
   if (eventId) {
     query += ' AND ci.event_id = ?';
     params.push(eventId);
   }
+
+  query += ' ORDER BY ci.received_at DESC LIMIT 1';
 
   const [rows] = await pool.execute(query, params);
   return rows[0] || null;

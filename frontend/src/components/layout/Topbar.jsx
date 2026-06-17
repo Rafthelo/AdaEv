@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
-const Topbar = ({ title }) => {
+const Topbar = ({ title, onMenuClick }) => {
   const { user, logout }    = useAuth();
   const navigate            = useNavigate();
   const [menuOpen, setMenu] = useState(false);
@@ -18,21 +18,30 @@ const Topbar = ({ title }) => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-      <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6 gap-2">
+      <div className="flex items-center gap-2 min-w-0">
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden text-gray-600 hover:text-gray-900 text-2xl px-1 shrink-0"
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
+        <h2 className="text-base sm:text-lg font-semibold text-gray-800 truncate">{title}</h2>
+      </div>
 
-      <div className="relative">
+      <div className="relative shrink-0">
         <button
           onClick={() => setMenu(!menuOpen)}
           className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition"
         >
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
             <span className="text-white text-xs font-bold">
               {user?.first_name?.[0]}{user?.last_name?.[0]}
             </span>
           </div>
-          <span className="font-medium">{user?.first_name} {user?.last_name}</span>
-          <span className="text-gray-400">▾</span>
+          <span className="font-medium hidden sm:inline">{user?.first_name} {user?.last_name}</span>
+          <span className="text-gray-400 hidden sm:inline">▾</span>
         </button>
 
         {menuOpen && (

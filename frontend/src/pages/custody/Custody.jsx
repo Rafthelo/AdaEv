@@ -31,7 +31,7 @@ const Custody = () => {
   const [meta,       setMeta]       = useState({});
   const [loading,    setLoading]    = useState(true);
   const [page,       setPage]       = useState(1);
-  const [search,     setSearch]     = useState('');
+  const [search               ]     = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
   const [refreshKey, setRefreshKey] = useState(0);
   const [alert,      setAlert]      = useState({ type: '', message: '' });
@@ -42,7 +42,8 @@ const Custody = () => {
   const [photo,       setPhoto]       = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [saving,      setSaving]      = useState(false);
-  const fileRef = useRef();
+  const fileRef   = useRef();
+const cameraRef = useRef();
 
   // Modal búsqueda por ticket
   const [searchModal,  setSearchModal]  = useState(false);
@@ -175,11 +176,11 @@ const Custody = () => {
     {
       key: 'actions', label: 'Acciones', width: '100px',
       render: (r) => (
-        <Button size="sm" variant="secondary" onClick={() => openDetail(r)}>Ver</Button>
+        <Button size="sm" variant="primary" onClick={() => openDetail(r)}icon="👁️">Detalles</Button>
       )
     },
   ];
-
+  
   return (
     <PageWrapper title="Custodia">
       {alert.message && (
@@ -191,13 +192,6 @@ const Custody = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
-            <input
-              type="text"
-              placeholder="Buscar ticket o descripción..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56"
-            />
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
@@ -270,22 +264,28 @@ const Custody = () => {
           {/* Foto */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-700">Fotografía</label>
-            <div
-              className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-400 transition"
-              onClick={() => fileRef.current?.click()}
-            >
-              {photoPreview ? (
-                <img src={photoPreview} alt="preview" className="max-h-40 mx-auto rounded-lg object-contain" />
-              ) : (
-                <div className="text-gray-400">
-                  <p className="text-2xl mb-1">📷</p>
-                  <p className="text-sm">Clic para agregar foto (opcional)</p>
-                  <p className="text-xs">JPG, PNG o WebP — máx. 5MB</p>
-                </div>
-              )}
-            </div>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
-            {photoPreview && (
+
+<div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+  {photoPreview ? (
+    <img src={photoPreview} alt="preview" className="max-h-40 mx-auto rounded-lg object-contain mb-3" />
+  ) : (
+    <div className="text-gray-400 text-center mb-3">
+      <p className="text-2xl mb-1">📷</p>
+      <p className="text-sm">Agrega una foto (opcional)</p>
+    </div>
+  )}
+  <div className="flex gap-2 justify-center">
+    <Button type="button" size="sm" variant="secondary" onClick={() => cameraRef.current?.click()}>
+      📷 Tomar foto
+    </Button>
+    <Button type="button" size="sm" variant="secondary" onClick={() => fileRef.current?.click()}>
+      🖼️ Elegir de galería
+    </Button>
+  </div>
+</div>
+<input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
+<input ref={fileRef}   type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+          {photoPreview && (
               <button type="button" onClick={() => { setPhoto(null); setPhotoPreview(null); }} className="text-xs text-red-500 hover:text-red-700 text-left">
                 Eliminar foto
               </button>

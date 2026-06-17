@@ -31,14 +31,14 @@ module.exports = {
   },
   jwt: {
     secret:            process.env.JWT_SECRET,
-    expiresIn:         process.env.JWT_EXPIRES_IN || '15m',
+    expiresIn:         process.env.JWT_EXPIRES_IN || '5m',
     refreshExpiresIn:  process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
   frontendUrl:   process.env.FRONTEND_URL,
   bcryptRounds:  parseInt(process.env.BCRYPT_ROUNDS) || 12,
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 300000,
-    max:      parseInt(process.env.RATE_LIMIT_MAX) || 10,
+    max:      parseInt(process.env.RATE_LIMIT_MAX) || 20,
   },
   adaos: {
     apiUrl:   process.env.ADAOS_API_URL || '',

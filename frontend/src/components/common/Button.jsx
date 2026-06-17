@@ -13,12 +13,21 @@ const sizes = {
   lg: 'px-6 py-3 text-base',
 };
 
+const Spinner = () => (
+  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+  </svg>
+);
+
 const Button = ({
   children, onClick, type = 'button',
   variant = 'primary', size = 'md',
   disabled = false, loading = false,
   className = '', icon = null,
 }) => {
+  const showIconSlot = loading || !!icon;
+
   return (
     <button
       type={type}
@@ -30,13 +39,12 @@ const Button = ({
         ${variants[variant]} ${sizes[size]} ${className}
       `}
     >
-      {loading && (
-        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-        </svg>
-      )}
-      {icon && !loading && <span>{icon}</span>}
+      <span
+        className="inline-flex items-center justify-center"
+        style={{ width: showIconSlot ? '1rem' : '0px', overflow: 'hidden' }}
+      >
+        {loading ? <Spinner /> : (icon || null)}
+      </span>
       {children}
     </button>
   );

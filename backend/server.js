@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin:      env.frontendUrl,
+    origin:      env.frontendUrl.split(','),
     credentials: true,
   },
   transports: ['websocket', 'polling'],
@@ -16,12 +16,12 @@ const io = new Server(server, {
 
 initSocket(io);
 
-server.listen(env.port, () => {
+server.listen(env.port, '0.0.0.0', () => {
   console.log('');
   console.log('  ╔══════════════════════════════════════╗');
   console.log('  ║           AdaEv Backend              ║');
   console.log('  ╠══════════════════════════════════════╣');
-  console.log(`  ║  Puerto:   ${env.port}                        ║`);
+  console.log(`  ║  Puerto:   ${env.port}                      ║`);
   console.log(`  ║  Entorno:  ${env.nodeEnv}               ║`);
   console.log('  ║  Estado:   Corriendo ✓               ║');
   console.log('  ╚══════════════════════════════════════╝');
