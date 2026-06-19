@@ -72,9 +72,9 @@ const Profile = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Info del usuario */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-800">Información personal</h3>
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100">Información personal</h3>
           </div>
           <div className="p-6">
             {/* Avatar */}
@@ -85,8 +85,8 @@ const Profile = () => {
                 </span>
               </div>
               <div>
-                <p className="font-semibold text-gray-800 text-lg">{user?.first_name} {user?.last_name}</p>
-                <p className="text-sm text-gray-500">@{user?.username}</p>
+                <p className="font-semibold text-gray-800 dark:text-gray-100 text-lg">{user?.first_name} {user?.last_name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">@{user?.username}</p>
                 <div className="flex gap-1 mt-1">
                   {user?.roles?.map((r) => (
                     <Badge key={r} label={r} color="blue" />
@@ -110,8 +110,10 @@ const Profile = () => {
                 label="Email" name="email" type="email" value={infoForm.email}
                 onChange={handleInfoChange} required
               />
-              <div className="bg-gray-50 rounded-lg px-3 py-2">
-                <p className="text-xs text-gray-500">Usuario: <span className="font-medium text-gray-700">@{user?.username}</span> (no editable)</p>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Usuario: <span className="font-medium text-gray-700 dark:text-gray-300">@{user?.username}</span> (no editable)
+                </p>
               </div>
               <Button type="submit" loading={savingInfo}>Guardar cambios</Button>
             </form>
@@ -119,9 +121,9 @@ const Profile = () => {
         </div>
 
         {/* Cambiar contraseña */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-800">Cambiar contraseña</h3>
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100">Cambiar contraseña</h3>
           </div>
           <div className="p-6">
             <form onSubmit={handlePassSubmit} className="space-y-4">

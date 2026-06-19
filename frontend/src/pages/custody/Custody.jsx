@@ -166,8 +166,8 @@ const Custody = () => {
   };
 
   const columns = [
-    { key: 'ticket_code', label: 'Ticket',    render: (r) => <span className="font-bold text-blue-600">{r.display_code || r.ticket_code}</span> },
-    { key: 'description', label: 'Descripción', render: (r) => <span className="text-gray-800">{r.description}</span> },
+    { key: 'ticket_code', label: 'Ticket',    render: (r) => <span className="font-bold text-blue-600 dark:text-blue-400">{r.display_code || r.ticket_code}</span> },
+    { key: 'description', label: 'Descripción', render: (r) => <span className="text-gray-800 dark:text-gray-100">{r.description}</span> },
     { key: 'event_name',  label: 'Evento',    render: (r) => r.event_name || '—' },
     { key: 'operator_username', label: 'Operador', render: (r) => r.operator_username || '—' },
     { key: 'price', label: 'Precio', render: (r) => parseFloat(r.price) > 0 ? `Bs. ${parseFloat(r.price).toFixed(2)}` : 'Gratis' },
@@ -189,13 +189,13 @@ const Custody = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos</option>
               <option value="active">En custodia</option>
@@ -232,11 +232,11 @@ const Custody = () => {
             />
             {!user?.assigned_event_id && can('custody:manage') && (
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">Evento</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Evento</label>
                 <select
                   value={form.event_id}
                   onChange={(e) => setForm({ ...form, event_id: e.target.value })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Sin evento</option>
                   {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
@@ -263,13 +263,13 @@ const Custody = () => {
         />
           {/* Foto */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Fotografía</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Fotografía</label>
 
-<div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+<div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
   {photoPreview ? (
     <img src={photoPreview} alt="preview" className="max-h-40 mx-auto rounded-lg object-contain mb-3" />
   ) : (
-    <div className="text-gray-400 text-center mb-3">
+    <div className="text-gray-400 dark:text-gray-500 text-center mb-3">
       <p className="text-2xl mb-1">📷</p>
       <p className="text-sm">Agrega una foto (opcional)</p>
     </div>
@@ -286,7 +286,7 @@ const Custody = () => {
 <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
 <input ref={fileRef}   type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
           {photoPreview && (
-              <button type="button" onClick={() => { setPhoto(null); setPhotoPreview(null); }} className="text-xs text-red-500 hover:text-red-700 text-left">
+              <button type="button" onClick={() => { setPhoto(null); setPhotoPreview(null); }} className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-left">
                 Eliminar foto
               </button>
             )}
@@ -309,13 +309,13 @@ const Custody = () => {
               onChange={(e) => setTicketSearch(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="Ingresa el código del ticket..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <Button onClick={handleSearch} loading={searching}>Buscar</Button>
           </div>
 
           {foundItem && (
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               {foundItem.photo_url && (
                 <img
                   src={foundItem.photo_url}
@@ -324,13 +324,13 @@ const Custody = () => {
                 />
               )}
               <div className="p-4 space-y-2">
-                <p className="font-bold text-gray-800 text-lg">Ticket: {foundItem.display_code || foundItem.ticket_code}</p>
-                <p className="text-gray-700">{foundItem.description}</p>
-                {foundItem.observations && <p className="text-sm text-gray-500">{foundItem.observations}</p>}
-                <p className={`font-bold text-lg ${parseFloat(foundItem.price) > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                <p className="font-bold text-gray-800 dark:text-gray-100 text-lg">Ticket: {foundItem.display_code || foundItem.ticket_code}</p>
+                <p className="text-gray-700 dark:text-gray-300">{foundItem.description}</p>
+                {foundItem.observations && <p className="text-sm text-gray-500 dark:text-gray-400">{foundItem.observations}</p>}
+                <p className={`font-bold text-lg ${parseFloat(foundItem.price) > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                 {parseFloat(foundItem.price) > 0 ? `Cobrar: Bs. ${parseFloat(foundItem.price).toFixed(2)}` : 'Sin costo'}
                 </p>
-                <p className="text-xs text-gray-400">Recibido: {new Date(foundItem.received_at).toLocaleString('es-BO')}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Recibido: {new Date(foundItem.received_at).toLocaleString('es-BO')}</p>
                 <div className="pt-2 flex gap-2">
                   {can('custody:return') && (
                     <Button onClick={() => handleReturn(foundItem.id)} loading={saving}>
@@ -357,51 +357,51 @@ const Custody = () => {
             )}
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-gray-500">Ticket</p>
-                <p className="font-bold text-blue-600 text-lg">{detailItem.display_code || detailItem.ticket_code}</p>
+                <p className="text-gray-500 dark:text-gray-400">Ticket</p>
+                <p className="font-bold text-blue-600 dark:text-blue-400 text-lg">{detailItem.display_code || detailItem.ticket_code}</p>
               </div>
               <div>
-                <p className="text-gray-500">Estado</p>
+                <p className="text-gray-500 dark:text-gray-400">Estado</p>
                 <Badge label={STATUS_LABELS[detailItem.status]} color={STATUS_COLORS[detailItem.status]} />
               </div>
               <div className="col-span-2">
-                <p className="text-gray-500">Descripción</p>
-                <p className="font-medium text-gray-800">{detailItem.description}</p>
+                <p className="text-gray-500 dark:text-gray-400">Descripción</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100">{detailItem.description}</p>
               </div>
               {detailItem.observations && (
                 <div className="col-span-2">
-                  <p className="text-gray-500">Observaciones</p>
-                  <p className="text-gray-700">{detailItem.observations}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Observaciones</p>
+                  <p className="text-gray-700 dark:text-gray-300">{detailItem.observations}</p>
                 </div>
               )}
               <div>
-                <p className="text-gray-500">Operador</p>
-                <p className="text-gray-700">{detailItem.operator_username || '—'}</p>
+                <p className="text-gray-500 dark:text-gray-400">Operador</p>
+                <p className="text-gray-700 dark:text-gray-300">{detailItem.operator_username || '—'}</p>
               </div>
               <div>
-                <p className="text-gray-500">Evento</p>
-                <p className="text-gray-700">{detailItem.event_name || '—'}</p>
+                <p className="text-gray-500 dark:text-gray-400">Evento</p>
+                <p className="text-gray-700 dark:text-gray-300">{detailItem.event_name || '—'}</p>
               </div>
               <div>
-                <p className="text-gray-500">Precio</p>
-                <p className={`font-medium ${parseFloat(detailItem.price) > 0 ? 'text-green-600' : 'text-gray-500'}`}>
+                <p className="text-gray-500 dark:text-gray-400">Precio</p>
+                <p className={`font-medium ${parseFloat(detailItem.price) > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                     {parseFloat(detailItem.price) > 0 ? `Bs. ${parseFloat(detailItem.price).toFixed(2)}` : 'Gratis'}
                 </p>
                 </div>
               <div>
-                <p className="text-gray-500">Recibido</p>
-                <p className="text-gray-700">{new Date(detailItem.received_at).toLocaleString('es-BO')}</p>
+                <p className="text-gray-500 dark:text-gray-400">Recibido</p>
+                <p className="text-gray-700 dark:text-gray-300">{new Date(detailItem.received_at).toLocaleString('es-BO')}</p>
               </div>
               {detailItem.returned_at && (
                 <div>
-                  <p className="text-gray-500">Devuelto</p>
-                  <p className="text-gray-700">{new Date(detailItem.returned_at).toLocaleString('es-BO')}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Devuelto</p>
+                  <p className="text-gray-700 dark:text-gray-300">{new Date(detailItem.returned_at).toLocaleString('es-BO')}</p>
                 </div>
               )}
             </div>
 
             {detailItem.status === 'active' && (
-              <div className="flex gap-3 pt-2 border-t border-gray-100">
+              <div className="flex gap-3 pt-2 border-t border-gray-100 dark:border-gray-700">
                 {can('custody:return') && (
                   <Button onClick={() => handleReturn(detailItem.id)} loading={saving}>
                     ✓ Devolver objeto

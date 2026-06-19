@@ -227,9 +227,9 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
     const ORDER_STATUS_COLORS = { pending: 'yellow', ready: 'blue', delivered: 'green', completed: 'green' };
 
     const columns = isSeller ? [
-      { key: 'id',            label: '#',       render: (r) => <span className="font-medium text-gray-800">{r.display_code || `#${r.id}`}</span> },
+      { key: 'id',            label: '#',       render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.display_code || `#${r.id}`}</span> },
       { key: 'product_codes', label: 'Productos', render: (r) => r.product_codes || '—' },
-      { key: 'total',         label: 'Total',   render: (r) => <span className="font-bold text-green-600">Bs. {parseFloat(r.total).toFixed(2)}</span> },
+      { key: 'total',         label: 'Total',   render: (r) => <span className="font-bold text-green-600 dark:text-green-400">Bs. {parseFloat(r.total).toFixed(2)}</span> },
       {
         key: 'order_status', label: 'Estado',
         render: (r) => {
@@ -250,11 +250,11 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
         )
       },
     ] : [
-  { key: 'id',               label: '#',         render: (r) => <span className="font-medium text-gray-800">{r.display_code || `#${r.id}`}</span> },
+  { key: 'id',               label: '#',         render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.display_code || `#${r.id}`}</span> },
   { key: 'event_name',       label: 'Evento',    render: (r) => r.event_name || '—' },
   { key: 'cashier_username', label: 'Cajero',    render: (r) => r.cashier_username || '—' },
   { key: 'product_codes',    label: 'Productos', render: (r) => r.product_codes || '—' },
-  { key: 'total',            label: 'Total',     render: (r) => <span className="font-bold text-green-600">Bs. {parseFloat(r.total).toFixed(2)}</span> },
+  { key: 'total',            label: 'Total',     render: (r) => <span className="font-bold text-green-600 dark:text-green-400">Bs. {parseFloat(r.total).toFixed(2)}</span> },
  {
   key: 'status', label: 'Estado',
   render: (r) => {
@@ -287,19 +287,19 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
         </div>
       )}
 {canPrepare && pendingOrders.length > 0 && (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-    <div className="px-6 py-4 border-b border-gray-100">
-      <h3 className="font-semibold text-gray-800">Pedidos por preparar</h3>
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+    <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+      <h3 className="font-semibold text-gray-800 dark:text-gray-100">Pedidos por preparar</h3>
     </div>
-    <div className="divide-y divide-gray-100">
+    <div className="divide-y divide-gray-100 dark:divide-gray-700">
       {pendingOrders.map((order) => (
         <div key={order.id} className="px-6 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-800">Pedido #{order.id} — {order.waiter_username}</p>
-            <p className="text-xs text-gray-500">{order.items_summary}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-100">Pedido #{order.id} — {order.waiter_username}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{order.items_summary}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="font-bold text-green-600">Bs. {parseFloat(order.total).toFixed(2)}</span>
+            <span className="font-bold text-green-600 dark:text-green-400">Bs. {parseFloat(order.total).toFixed(2)}</span>
             <Button size="sm" onClick={() => handleMarkReady(order.id)} loading={saving}>
               Marcar listo
             </Button>
@@ -310,29 +310,29 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
   </div>
 )}
 {canPrepare && readyOrders.length > 0 && (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-    <div className="px-6 py-4 border-b border-gray-100">
-      <h3 className="font-semibold text-gray-800">Pedidos listos — esperando entrega</h3>
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+    <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+      <h3 className="font-semibold text-gray-800 dark:text-gray-100">Pedidos listos — esperando entrega</h3>
     </div>
-    <div className="divide-y divide-gray-100">
+    <div className="divide-y divide-gray-100 dark:divide-gray-700">
       {readyOrders.map((order) => (
         <div key={order.id} className="px-6 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-800">Pedido #{order.id} — {order.waiter_username}</p>
-            <p className="text-xs text-gray-500">{order.items_summary}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-gray-100">Pedido #{order.id} — {order.waiter_username}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{order.items_summary}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="font-bold text-green-600">Bs. {parseFloat(order.total).toFixed(2)}</span>
-            <span className="text-2xl font-bold text-blue-600 tracking-widest">{order.confirmation_code}</span>
+            <span className="font-bold text-green-600 dark:text-green-400">Bs. {parseFloat(order.total).toFixed(2)}</span>
+            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 tracking-widest">{order.confirmation_code}</span>
           </div>
         </div>
       ))}
     </div>
   </div>
 )}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">Historial de ventas</h3>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100">Historial de ventas</h3>
           {can('sales:create') && (
             <Button onClick={() => {
               setForm({ ...EMPTY_FORM, event_id: user?.assigned_event_id || '' });
@@ -352,12 +352,12 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isSeller && (
   <div className="flex flex-col gap-1">
-    <label className="text-sm font-medium text-gray-700">Evento</label>
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Evento</label>
     <select
       name="event_id"
       value={form.event_id}
       onChange={(e) => setForm({ ...form, event_id: e.target.value })}
-      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       <option value="">Sin evento</option>
       {events.map((ev) => (
@@ -367,12 +367,12 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
   </div>
 )}
 {canGiveCourtesy && (
-  <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2">
+  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-3 py-2">
     <input
       type="checkbox"
       checked={form.is_courtesy}
       onChange={(e) => setForm({ ...form, is_courtesy: e.target.checked })}
-      className="rounded border-gray-300 text-blue-600"
+      className="rounded border-gray-300 dark:border-gray-600 text-blue-600"
     />
     Esta venta es una cortesía (puedo modificar los precios)
   </label>
@@ -380,14 +380,14 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
           {/* Items */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700">Productos</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Productos</label>
               <Button size="sm" variant="secondary" onClick={addItem} type="button" icon="＋">
                 Agregar
               </Button>
             </div>
 
             {form.items.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-4 border border-dashed border-gray-200 rounded-lg">
+              <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
                 Agrega productos a la venta
               </p>
             )}
@@ -398,7 +398,7 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
                   <select
                     value={item.product_id}
                     onChange={(e) => updateItem(i, 'product_id', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Producto...</option>
                     {products.map((p) => (
@@ -411,7 +411,7 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
                     type="number" min="1" value={item.quantity}
                     onChange={(e) => updateItem(i, 'quantity', e.target.value)}
                     placeholder="Cant."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="col-span-3">
@@ -421,7 +421,9 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
                     placeholder="Precio"
                     disabled={!form.is_courtesy}
                     className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      form.is_courtesy ? 'border-gray-300' : 'border-gray-200 bg-gray-50 text-gray-500'
+                      form.is_courtesy
+                        ? 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400'
                     }`}
                   />
                 </div>
@@ -434,8 +436,8 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
 
           {form.items.length > 0 && (
             <div className="flex justify-end">
-              <p className="text-lg font-bold text-gray-800">
-                Total: <span className="text-green-600">Bs. {getTotal().toFixed(2)}</span>
+              <p className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                Total: <span className="text-green-600 dark:text-green-400">Bs. {getTotal().toFixed(2)}</span>
               </p>
             </div>
           )}
@@ -456,7 +458,7 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
       {/* Modal Anular */}
       <Modal isOpen={voidModal} onClose={() => setVoidModal(false)} title="Anular Venta" size="sm">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">Esta acción devolverá el stock de los productos. ¿Confirmas la anulación?</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Esta acción devolverá el stock de los productos. ¿Confirmas la anulación?</p>
           <Input
             label="Motivo de anulación"
             name="void_reason"
@@ -474,7 +476,7 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
       {/* Modal Confirmar Entrega */}
 <Modal isOpen={deliverModal} onClose={() => setDeliverModal(false)} title="Confirmar Entrega" size="sm">
   <div className="space-y-4">
-    <p className="text-sm text-gray-600">
+    <p className="text-sm text-gray-600 dark:text-gray-400">
       Ingresa el código de 4 dígitos que te dio el bartender al entregarte el pedido.
     </p>
     <Input
@@ -493,10 +495,10 @@ const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { ...EMPTY_ITE
 {/* Modal Código Generado */}
 <Modal isOpen={readyModal} onClose={() => setReadyModal(false)} title="Pedido Listo" size="sm">
   <div className="text-center space-y-4">
-    <p className="text-sm text-gray-600">
+    <p className="text-sm text-gray-600 dark:text-gray-400">
       Dale este código al mesero para que confirme la entrega del pedido #{readyResult?.id}:
     </p>
-    <p className="text-5xl font-bold text-blue-600 tracking-widest">{readyResult?.code}</p>
+    <p className="text-5xl font-bold text-blue-600 dark:text-blue-400 tracking-widest">{readyResult?.code}</p>
     <Button onClick={() => setReadyModal(false)}>Entendido</Button>
   </div>
 </Modal>

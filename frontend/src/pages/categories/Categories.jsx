@@ -105,7 +105,7 @@ const Categories = () => {
     }
   };
   const columns = [
-    { key: 'name',        label: 'Nombre',     render: (r) => <span className="font-medium text-gray-800">{r.name}</span> },
+    { key: 'name',        label: 'Nombre',     render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.name}</span> },
     { key: 'description', label: 'Descripción', render: (r) => r.description || '—' },
     { key: 'parent_name', label: 'Categoría padre', render: (r) => r.parent_name || '—' },
     { key: 'is_active',   label: 'Estado', render: (r) => <Badge label={r.is_active ? 'Activa' : 'Inactiva'} color={r.is_active ? 'green' : 'red'} /> },
@@ -135,9 +135,9 @@ const Categories = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">Categorías de productos</h3>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100">Categorías de productos</h3>
           {can('categories:create') && (
             <Button onClick={openCreate} icon="＋">Nueva Categoría</Button>
           )}
@@ -157,10 +157,10 @@ const Categories = () => {
             onChange={handleChange} placeholder="Descripción opcional"
           />
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Categoría padre</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría padre</label>
             <select
               name="parent_id" value={form.parent_id} onChange={handleChange}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Sin categoría padre</option>
               {categories

@@ -160,7 +160,7 @@ const handleDelete = async (id) => {
   }
 };
   const columns = [
-    { key: 'username',   label: 'Usuario',   render: (r) => <span className="font-medium text-gray-800">{r.username}</span> },
+    { key: 'username',   label: 'Usuario',   render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.username}</span> },
     { key: 'email',      label: 'Email',     render: (r) => r.email },
     { key: 'first_name', label: 'Nombre',    render: (r) => `${r.first_name} ${r.last_name}` },
     { key: 'is_active',  label: 'Estado',    render: (r) => <Badge label={r.is_active ? 'Activo' : 'Inactivo'} color={r.is_active ? 'green' : 'red'} /> },
@@ -196,14 +196,14 @@ const handleDelete = async (id) => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
           <input
             type="text"
             placeholder="Buscar usuario..."
             value={search}
             onChange={(e) => { setSearch(e.target.value);  setRefreshKey((k) => k + 1); }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
           {can('users:manage') && (
             <Button onClick={openCreate} icon="＋">Nuevo Usuario</Button>
@@ -254,12 +254,12 @@ const handleDelete = async (id) => {
             {/* Tipo de vendedor y evento asignado */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">Tipo de vendedor</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de vendedor</label>
                 <select
                   name="seller_type"
                   value={form.seller_type}
                   onChange={handleChange}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">No es vendedor</option>
                   <option value="independent">Vendedor independiente</option>
@@ -268,12 +268,12 @@ const handleDelete = async (id) => {
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">Evento asignado</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Evento asignado</label>
                 <select
                   name="assigned_event_id"
                   value={form.assigned_event_id}
                   onChange={handleChange}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Sin evento asignado</option>
                   {events.map((ev) => (
@@ -284,7 +284,7 @@ const handleDelete = async (id) => {
             </div>
           {/* Roles */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Roles <span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Roles <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-2 gap-2">
               {roles.map((role) => (
                 <label key={role.id} className="flex items-center gap-2 cursor-pointer">
@@ -292,9 +292,9 @@ const handleDelete = async (id) => {
                     type="checkbox"
                     checked={form.roles.includes(role.id)}
                     onChange={() => handleRoleToggle(role.id)}
-                    className="rounded border-gray-300 text-blue-600"
+                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600"
                   />
-                  <span className="text-sm text-gray-700 capitalize">{role.name}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{role.name}</span>
                 </label>
               ))}
             </div>

@@ -102,13 +102,13 @@ const Inventory = () => {
   };
 
   const columns = [
-    { key: 'product_name', label: 'Producto', render: (r) => <span className="font-medium text-gray-800">{r.product_name}</span> },
+    { key: 'product_name', label: 'Producto', render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.product_name}</span> },
     { key: 'sku',          label: 'SKU',       render: (r) => r.sku || '—' },
     { key: 'event_name',   label: 'Evento',    render: (r) => r.event_name || 'General' },
     {
       key: 'quantity', label: 'Stock actual',
       render: (r) => (
-        <span className={`font-bold ${r.quantity <= r.min_stock && r.min_stock > 0 ? 'text-red-600' : 'text-gray-800'}`}>
+        <span className={`font-bold ${r.quantity <= r.min_stock && r.min_stock > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-100'}`}>
           {r.quantity}
         </span>
       )
@@ -140,14 +140,14 @@ const Inventory = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
             <input
               type="checkbox"
               checked={lowStock}
               onChange={(e) => { setLowStock(e.target.checked); setPage(1); }}
-              className="rounded border-gray-300 text-blue-600"
+              className="rounded border-gray-300 dark:border-gray-600 text-blue-600"
             />
             Mostrar solo stock bajo
           </label>
@@ -166,10 +166,10 @@ const Inventory = () => {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Ajustar Inventario">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Producto <span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Producto <span className="text-red-500">*</span></label>
             <select
               name="product_id" value={form.product_id} onChange={handleChange} required
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Selecciona un producto...</option>
               {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -177,10 +177,10 @@ const Inventory = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Evento</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Evento</label>
             <select
               name="event_id" value={form.event_id} onChange={handleChange}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">General (sin evento)</option>
               {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
@@ -189,10 +189,10 @@ const Inventory = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Tipo de movimiento <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de movimiento <span className="text-red-500">*</span></label>
               <select
                 name="type" value={form.type} onChange={handleChange} required
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="in">Entrada</option>
                 <option value="out">Salida</option>
@@ -221,8 +221,8 @@ const Inventory = () => {
       {/* Modal Stock Mínimo */}
       <Modal isOpen={minStockModal} onClose={() => setMinStockModal(false)} title="Stock Mínimo" size="sm">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Producto: <span className="font-medium">{editingItem?.product_name}</span>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Producto: <span className="font-medium text-gray-800 dark:text-gray-100">{editingItem?.product_name}</span>
           </p>
           <Input
             label="Stock mínimo" type="number" min="0" value={minStockValue}

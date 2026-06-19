@@ -70,7 +70,7 @@ const Organizations = () => {
   };
 
   const columns = [
-    { key: 'name',    label: 'Nombre',   render: (r) => <span className="font-medium text-gray-800">{r.name}</span> },
+    { key: 'name',    label: 'Nombre',   render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.name}</span> },
     { key: 'type',    label: 'Tipo',     render: (r) => r.type || '—' },
     { key: 'contact', label: 'Contacto', render: (r) => r.contact || '—' },
     { key: 'phone',   label: 'Teléfono', render: (r) => r.phone || '—' },
@@ -91,9 +91,9 @@ const Organizations = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">Organizaciones</h3>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100">Organizaciones</h3>
           {can('organizations:manage') && (
             <Button onClick={openCreate} icon="＋">Nueva Organización</Button>
           )}
@@ -106,9 +106,9 @@ const Organizations = () => {
           <Input label="Nombre" name="name" value={form.name} onChange={handleChange} required placeholder="Nombre de la organización" />
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Tipo</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
               <select name="type" value={form.type} onChange={handleChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Sin tipo</option>
                 <option value="sponsor">Patrocinador</option>
                 <option value="investor">Inversor</option>

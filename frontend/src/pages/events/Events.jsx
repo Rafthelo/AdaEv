@@ -125,36 +125,36 @@ const Events = () => {
       setSaving(false);
     }
   };
-const openSummary = async (eventId) => {
-  setSummaryError('');
-  setSummaryData(null);
-  setSummaryModal(true);
-  try {
-    const { data } = await getEventSummary(eventId);
-    setSummaryData(data.data);
-  } catch (err) {
-    setSummaryError(err.response?.data?.message || 'Error al cargar el resumen');
-  }
-};
+  const openSummary = async (eventId) => {
+    setSummaryError('');
+    setSummaryData(null);
+    setSummaryModal(true);
+    try {
+      const { data } = await getEventSummary(eventId);
+      setSummaryData(data.data);
+    } catch (err) {
+      setSummaryError(err.response?.data?.message || 'Error al cargar el resumen');
+    }
+  };
   const columns = [
-    { key: 'name',     label: 'Nombre',   render: (r) => <span className="font-medium text-gray-800">{r.name}</span> },
+    { key: 'name',     label: 'Nombre',   render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.name}</span> },
     { key: 'location', label: 'Lugar',    render: (r) => r.location || '—' },
     { key: 'starts_at',label: 'Inicio',   render: (r) => new Date(r.starts_at).toLocaleDateString('es-BO') },
     { key: 'status',   label: 'Estado',   render: (r) => <Badge label={STATUS_LABELS[r.status]} color={STATUS_COLORS[r.status]} /> },
     { key: 'created_by_username', label: 'Creado por', render: (r) => r.created_by_username || '—' },
-{
-  key: 'actions', label: 'Acciones', width: '180px',
-  render: (r) => (
-    <div className="flex gap-2">
-      {can('events:update') && (
-        <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
-      )}
-      {r.status === 'closed' && (
-        <Button size="sm" variant="primary" onClick={() => openSummary(r.id)}>Ver Resumen</Button>
-      )}
-    </div>
-  )
-},
+    {
+      key: 'actions', label: 'Acciones', width: '180px',
+      render: (r) => (
+        <div className="flex gap-2">
+          {can('events:update') && (
+            <Button size="sm" variant="secondary" onClick={() => openEdit(r)}>Editar</Button>
+          )}
+          {r.status === 'closed' && (
+            <Button size="sm" variant="primary" onClick={() => openSummary(r.id)}>Ver Resumen</Button>
+          )}
+        </div>
+      )
+    },
   ];
 
   return (
@@ -167,15 +167,15 @@ const openSummary = async (eventId) => {
       )}
 
       {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <input
               type="text"
               placeholder="Buscar evento..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
             />
           </div>
           {can('events:create') && (
@@ -208,7 +208,7 @@ const openSummary = async (eventId) => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {isLocked && (
-            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 px-4 py-3 rounded-lg text-sm">
               Este evento está {editing.status === 'closed' ? 'cerrado' : 'cancelado'}. Solo puedes cambiar su estado para reabrirlo.
             </div>
           )}
@@ -259,12 +259,12 @@ const openSummary = async (eventId) => {
 
           {editing && (
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Estado</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
               <select
                 name="status"
                 value={form.status}
                 onChange={handleChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {isLocked ? (
                   <>
@@ -294,82 +294,82 @@ const openSummary = async (eventId) => {
         </form>
       </Modal>
       {/* Modal Resumen del Evento */}
-<Modal isOpen={summaryModal} onClose={() => setSummaryModal(false)} title="Resumen del Evento" size="xl">
-  {summaryError && (
-    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-      {summaryError}
-    </div>
-  )}
-
-  {!summaryError && !summaryData && (
-    <div className="flex justify-center py-8">
-      <Spinner />
-    </div>
-  )}
-
-  {summaryData && (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-          <p className="text-xs text-gray-500">Ventas</p>
-          <p className="text-2xl font-bold text-green-700">Bs. {parseFloat(summaryData.sales_revenue).toFixed(2)}</p>
-          <p className="text-xs text-gray-400">{summaryData.sales_count} transacciones</p>
-        </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <p className="text-xs text-gray-500">Custodia</p>
-          <p className="text-2xl font-bold text-blue-700">Bs. {parseFloat(summaryData.custody_revenue).toFixed(2)}</p>
-          <p className="text-xs text-gray-400">{summaryData.custody_received} recibidos, {summaryData.custody_returned} devueltos, {summaryData.custody_lost} perdidos</p>
-        </div>
-        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4">
-          <p className="text-xs text-gray-500">Participantes</p>
-          <p className="text-2xl font-bold text-purple-700">{summaryData.participants_count}</p>
-          <p className="text-xs text-gray-400">Usuarios que actuaron en el evento</p>
-        </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <p className="text-xs text-gray-500">Anulaciones</p>
-          <p className="text-2xl font-bold text-yellow-700">{summaryData.voids_count}</p>
-          <p className="text-xs text-gray-400">{summaryData.inventory_adjustments} ajustes de inventario</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className={`rounded-xl p-4 border ${summaryData.operative_result >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-          <p className="text-sm text-gray-500">Resultado Operativo</p>
-          <p className={`text-2xl font-bold ${summaryData.operative_result >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-            Bs. {parseFloat(summaryData.operative_result).toFixed(2)}
-          </p>
-        </div>
-        <div className={`rounded-xl p-4 border ${summaryData.net_result >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-          <p className="text-sm text-gray-500">Resultado Neto</p>
-          <p className={`text-2xl font-bold ${summaryData.net_result >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-            Bs. {parseFloat(summaryData.net_result).toFixed(2)}
-          </p>
-        </div>
-      </div>
-
-      {summaryData.top_products?.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">Top 5 Productos</h3>
-          <div className="bg-gray-50 rounded-lg divide-y divide-gray-200">
-            {summaryData.top_products.map((p, i) => (
-              <div key={i} className="flex justify-between px-4 py-2 text-sm">
-                <span className="text-gray-700">{p.product} ({p.sku})</span>
-                <span className="font-bold text-gray-800">{p.quantity} unidades</span>
-              </div>
-            ))}
+      <Modal isOpen={summaryModal} onClose={() => setSummaryModal(false)} title="Resumen del Evento" size="xl">
+        {summaryError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+            {summaryError}
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 border-t border-gray-100 pt-4">
-        <p>Apertura: {summaryData.opened_at ? new Date(summaryData.opened_at).toLocaleString('es-BO') : '—'}</p>
-        <p>Cierre: {summaryData.closed_at ? new Date(summaryData.closed_at).toLocaleString('es-BO') : '—'}</p>
-        <p>Generado: {new Date(summaryData.generated_at).toLocaleString('es-BO')}</p>
-        <p>Versión del resumen: {summaryData.summary_version}</p>
-      </div>
-    </div>
-  )}
-</Modal>
+        {!summaryError && !summaryData && (
+          <div className="flex justify-center py-8">
+            <Spinner />
+          </div>
+        )}
+
+        {summaryData && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400">Ventas</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">Bs. {parseFloat(summaryData.sales_revenue).toFixed(2)}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.sales_count} transacciones</p>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400">Custodia</p>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">Bs. {parseFloat(summaryData.custody_revenue).toFixed(2)}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.custody_received} recibidos, {summaryData.custody_returned} devueltos, {summaryData.custody_lost} perdidos</p>
+              </div>
+              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400">Participantes</p>
+                <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{summaryData.participants_count}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Usuarios que actuaron en el evento</p>
+              </div>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400">Anulaciones</p>
+                <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{summaryData.voids_count}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.inventory_adjustments} ajustes de inventario</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className={`rounded-xl p-4 border ${summaryData.operative_result >= 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Resultado Operativo</p>
+                <p className={`text-2xl font-bold ${summaryData.operative_result >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                  Bs. {parseFloat(summaryData.operative_result).toFixed(2)}
+                </p>
+              </div>
+              <div className={`rounded-xl p-4 border ${summaryData.net_result >= 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Resultado Neto</p>
+                <p className={`text-2xl font-bold ${summaryData.net_result >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                  Bs. {parseFloat(summaryData.net_result).toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {summaryData.top_products?.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2 text-sm uppercase tracking-wide">Top 5 Productos</h3>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
+                  {summaryData.top_products.map((p, i) => (
+                    <div key={i} className="flex justify-between px-4 py-2 text-sm">
+                      <span className="text-gray-700 dark:text-gray-300">{p.product} ({p.sku})</span>
+                      <span className="font-bold text-gray-800 dark:text-gray-100">{p.quantity} unidades</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4">
+              <p>Apertura: {summaryData.opened_at ? new Date(summaryData.opened_at).toLocaleString('es-BO') : '—'}</p>
+              <p>Cierre: {summaryData.closed_at ? new Date(summaryData.closed_at).toLocaleString('es-BO') : '—'}</p>
+              <p>Generado: {new Date(summaryData.generated_at).toLocaleString('es-BO')}</p>
+              <p>Versión del resumen: {summaryData.summary_version}</p>
+            </div>
+          </div>
+        )}
+      </Modal>
     </PageWrapper>
   );
 };

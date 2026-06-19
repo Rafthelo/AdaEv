@@ -109,17 +109,17 @@ const Products = () => {
       setAlert({ type: 'error', message: err.response?.data?.message || 'Error al desactivar' });
     }
   };
-const handleActivate = async (id) => {
-  try {
-    await updateProduct(id, { is_active: true });
-    setAlert({ type: 'success', message: 'Producto activado' });
-    setRefreshKey((k) => k + 1);
-  } catch (err) {
-    setAlert({ type: 'error', message: err.response?.data?.message || 'Error al activar' });
-  }
-};
+  const handleActivate = async (id) => {
+    try {
+      await updateProduct(id, { is_active: true });
+      setAlert({ type: 'success', message: 'Producto activado' });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setAlert({ type: 'error', message: err.response?.data?.message || 'Error al activar' });
+    }
+  };
   const columns = [
-    { key: 'name',          label: 'Nombre',     render: (r) => <span className="font-medium text-gray-800">{r.name}</span> },
+    { key: 'name',          label: 'Nombre',     render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100">{r.name}</span> },
     { key: 'sku',           label: 'SKU',        render: (r) => r.sku || '—' },
     { key: 'category_name', label: 'Categoría',  render: (r) => r.category_name || '—' },
     { key: 'price',         label: 'Precio',     render: (r) => `Bs. ${parseFloat(r.price).toFixed(2)}` },
@@ -139,7 +139,7 @@ const handleActivate = async (id) => {
           )}
         </div>
       )
-},
+    },
   ];
 
   return (
@@ -150,14 +150,14 @@ const handleActivate = async (id) => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
           <input
             type="text"
             placeholder="Buscar producto o SKU..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setRefreshKey((k) => k + 1);; }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+            onChange={(e) => { setSearch(e.target.value); setRefreshKey((k) => k + 1); }}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
           {can('products:create') && (
             <Button onClick={openCreate} icon="＋">Nuevo Producto</Button>
@@ -199,12 +199,12 @@ const handleActivate = async (id) => {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Categoría</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría</label>
             <select
               name="category_id"
               value={form.category_id}
               onChange={handleChange}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Sin categoría</option>
               {categories.map((c) => (

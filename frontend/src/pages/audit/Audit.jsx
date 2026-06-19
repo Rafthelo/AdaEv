@@ -73,7 +73,7 @@ const Audit = () => {
       render: (r) => (
         <button
           onClick={() => openDetail(r.id)}
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
         >
           Ver detalle
         </button>
@@ -89,21 +89,21 @@ const Audit = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
           <input
             type="text"
             placeholder="Filtrar por entidad (ej. sales)"
             value={filters.entity}
             onChange={(e) => { setFilters({ ...filters, entity: e.target.value }); setPage(1); }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56"
           />
           <input
             type="text"
             placeholder="Filtrar por acción (ej. create)"
             value={filters.action}
             onChange={(e) => { setFilters({ ...filters, action: e.target.value }); setPage(1); }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-56"
           />
         </div>
 
@@ -117,35 +117,35 @@ const Audit = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-500">Usuario</p>
-                <p className="font-medium text-gray-800">{detail.username || 'Sistema'}</p>
+                <p className="text-gray-500 dark:text-gray-400">Usuario</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100">{detail.username || 'Sistema'}</p>
               </div>
               <div>
-                <p className="text-gray-500">Acción</p>
-                <p className="font-medium text-gray-800">{detail.action}</p>
+                <p className="text-gray-500 dark:text-gray-400">Acción</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100">{detail.action}</p>
               </div>
               <div>
-                <p className="text-gray-500">Entidad</p>
-                <p className="font-medium text-gray-800">{detail.entity} #{detail.entity_id || '—'}</p>
+                <p className="text-gray-500 dark:text-gray-400">Entidad</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100">{detail.entity} #{detail.entity_id || '—'}</p>
               </div>
               <div>
-                <p className="text-gray-500">Fecha</p>
-                <p className="font-medium text-gray-800">{new Date(detail.created_at).toLocaleString('es-BO')}</p>
+                <p className="text-gray-500 dark:text-gray-400">Fecha</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100">{new Date(detail.created_at).toLocaleString('es-BO')}</p>
               </div>
               <div>
-                <p className="text-gray-500">IP</p>
-                <p className="font-medium text-gray-800">{detail.ip_address || '—'}</p>
+                <p className="text-gray-500 dark:text-gray-400">IP</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100">{detail.ip_address || '—'}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-gray-500">User Agent</p>
-                <p className="text-xs text-gray-600 break-all">{detail.user_agent || '—'}</p>
+                <p className="text-gray-500 dark:text-gray-400">User Agent</p>
+                <p className="text-xs text-gray-600 dark:text-gray-300 break-all">{detail.user_agent || '—'}</p>
               </div>
             </div>
 
             {detail.old_values && (
               <div>
-                <p className="text-sm font-medium text-gray-700 mb-1">Valores anteriores</p>
-                <pre className="bg-gray-50 rounded-lg p-3 text-xs overflow-x-auto">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valores anteriores</p>
+                <pre className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg p-3 text-xs overflow-x-auto">
                   {JSON.stringify(detail.old_values, null, 2)}
                 </pre>
               </div>
@@ -153,8 +153,8 @@ const Audit = () => {
 
             {detail.new_values && (
               <div>
-                <p className="text-sm font-medium text-gray-700 mb-1">Valores nuevos</p>
-                <pre className="bg-gray-50 rounded-lg p-3 text-xs overflow-x-auto">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valores nuevos</p>
+                <pre className="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg p-3 text-xs overflow-x-auto">
                   {JSON.stringify(detail.new_values, null, 2)}
                 </pre>
               </div>

@@ -10,16 +10,16 @@ import {
 } from '../../api/endpoints/reports.api';
 
 const ReportCard = ({ icon, title, description, onDownload, loading, disabled, requiresEvent }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col gap-3">
+  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col gap-3">
     <div className="flex items-center gap-3">
       <span className="text-3xl">{icon}</span>
       <div>
-        <h3 className="font-semibold text-gray-800">{title}</h3>
-        <p className="text-sm text-gray-500">{description}</p>
+        <h3 className="font-semibold text-gray-800 dark:text-gray-100">{title}</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
       </div>
     </div>
     {requiresEvent && disabled && (
-      <p className="text-xs text-amber-600">Selecciona un evento para este reporte</p>
+      <p className="text-xs text-amber-600 dark:text-amber-400">Selecciona un evento para este reporte</p>
     )}
     <Button onClick={onDownload} loading={loading} disabled={disabled} icon="⬇️">
       Descargar Excel
@@ -61,19 +61,19 @@ const Reports = () => {
       )}
 
       {/* Selector de evento */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-6 py-4 mb-6">
-        <label className="text-sm font-medium text-gray-600 block mb-2">Evento</label>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 px-6 py-4 mb-6">
+        <label className="text-sm font-medium text-gray-600 dark:text-gray-300 block mb-2">Evento</label>
         <select
           value={selectedEvent}
           onChange={(e) => setSelectedEvent(e.target.value)}
-          className="w-full md:w-80 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full md:w-80 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Todos los eventos</option>
           {events.map((ev) => (
             <option key={ev.id} value={ev.id}>{ev.name}</option>
           ))}
         </select>
-        <p className="text-xs text-gray-400 mt-2">
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
           Si no seleccionas un evento, los reportes de ventas, custodia y rendimiento incluirán todos los eventos. El reporte financiero requiere un evento específico.
         </p>
       </div>

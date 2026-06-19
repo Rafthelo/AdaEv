@@ -15,7 +15,7 @@ const Table = ({ columns, data, loading = false, emptyMessage = 'Sin registros' 
 
   if (data.length === 0) {
     return (
-      <div className="py-12 text-center text-gray-400 text-sm">
+      <div className="py-12 text-center text-gray-400 dark:text-gray-500 text-sm">
         {emptyMessage}
       </div>
     );
@@ -27,11 +27,11 @@ const Table = ({ columns, data, loading = false, emptyMessage = 'Sin registros' 
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
+            <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                   style={{ width: col.width }}
                 >
                   {col.label}
@@ -43,10 +43,10 @@ const Table = ({ columns, data, loading = false, emptyMessage = 'Sin registros' 
             {data.map((row, i) => (
               <tr
                 key={row.id || i}
-                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
               >
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-gray-700">
+                  <td key={col.key} className="px-4 py-3 text-gray-700 dark:text-gray-300">
                     {col.render ? col.render(row) : row[col.key]}
                   </td>
                 ))}
@@ -57,7 +57,7 @@ const Table = ({ columns, data, loading = false, emptyMessage = 'Sin registros' 
       </div>
 
       {/* Vista de tarjetas — móvil */}
-      <div className="md:hidden divide-y divide-gray-100">
+      <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
         {data.map((row, i) => (
           <div key={row.id || i} className="p-4 space-y-2">
             {dataCols.map((col) => {
@@ -65,8 +65,8 @@ const Table = ({ columns, data, loading = false, emptyMessage = 'Sin registros' 
               if (value === '—' || value === null || value === undefined) return null;
               return (
                 <div key={col.key} className="flex justify-between items-start gap-3 text-sm">
-                  <span className="text-gray-400 text-xs uppercase tracking-wide shrink-0 pt-0.5">{col.label}</span>
-                  <span className="text-gray-800 text-right">{value}</span>
+                  <span className="text-gray-400 dark:text-gray-500 text-xs uppercase tracking-wide shrink-0 pt-0.5">{col.label}</span>
+                  <span className="text-gray-800 dark:text-gray-200 text-right">{value}</span>
                 </div>
               );
             })}

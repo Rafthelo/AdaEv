@@ -54,9 +54,9 @@ const getTypeLabel = (category, type) => {
 };
 
 const SummaryCard = ({ title, amount, color, children }) => (
-  <div className={`bg-white rounded-xl border-2 ${color} p-4`}>
-    <h4 className="text-sm font-medium text-gray-500 mb-1">{title}</h4>
-    <p className="text-2xl font-bold text-gray-800">Bs. {parseFloat(amount || 0).toFixed(2)}</p>
+  <div className={`bg-white dark:bg-gray-900 rounded-xl border-2 ${color} p-4`}>
+    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</h4>
+    <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">Bs. {parseFloat(amount || 0).toFixed(2)}</p>
     {children}
   </div>
 );
@@ -218,7 +218,7 @@ const handleDelete = async () => {
     { key: 'description', label: 'Descripción', render: (r) => r.description || '—' },
     { key: 'organization_name', label: 'Organización', render: (r) => r.organization_name || '—' },
     { key: 'event_name', label: 'Evento',   render: (r) => r.event_name || '—' },
-    { key: 'amount',    label: 'Monto',     render: (r) => <span className={`font-bold ${r.category === 'expense' || r.category === 'return' ? 'text-red-600' : 'text-green-600'}`}>Bs. {parseFloat(r.amount).toFixed(2)}</span> },
+    { key: 'amount',    label: 'Monto',     render: (r) => <span className={`font-bold ${r.category === 'expense' || r.category === 'return' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>Bs. {parseFloat(r.amount).toFixed(2)}</span> },
 {
   key: 'actions', label: '', width: '160px',
   render: (r) => (
@@ -242,13 +242,13 @@ const handleDelete = async () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <select
               value={filterEvent}
               onChange={(e) => { setFilterEvent(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos los eventos</option>
               {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
@@ -256,7 +256,7 @@ const handleDelete = async () => {
             <select
               value={filterCat}
               onChange={(e) => { setFilterCat(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las categorías</option>
               {Object.entries(CATEGORIES).map(([k, v]) => (
@@ -284,9 +284,9 @@ const handleDelete = async () => {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Editar Movimiento Financiero' : 'Nuevo Movimiento Financiero'} size="lg"> <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Evento</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Evento</label>
               <select name="event_id" value={form.event_id} onChange={handleChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Sin evento</option>
                 {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
               </select>
@@ -296,9 +296,9 @@ const handleDelete = async () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Categoría <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría <span className="text-red-500">*</span></label>
               <select name="category" value={form.category} onChange={handleChange} required
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Selecciona...</option>
                 {Object.entries(CATEGORIES).map(([k, v]) => (
                   <option key={k} value={k}>{v.label}</option>
@@ -306,9 +306,9 @@ const handleDelete = async () => {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Tipo <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo <span className="text-red-500">*</span></label>
               <select name="type" value={form.type} onChange={handleChange} required disabled={!form.category}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50">
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 dark:disabled:bg-gray-700">
                 <option value="">Selecciona categoría primero</option>
                 {(TYPES[form.category] || []).map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -321,9 +321,9 @@ const handleDelete = async () => {
             <Input label="Monto" name="amount" type="number" min="0" step="0.01"
               value={form.amount} onChange={handleChange} required placeholder="0.00" />
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Organización</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Organización</label>
               <select name="organization_id" value={form.organization_id} onChange={handleChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Sin organización</option>
                 {orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
               </select>
@@ -335,9 +335,9 @@ const handleDelete = async () => {
 
           {(form.category === 'return') && (
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Vinculado a (movimiento original)</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vinculado a (movimiento original)</label>
               <select name="related_movement_id" value={form.related_movement_id} onChange={handleChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Sin vincular</option>
                 {movements.filter((m) => m.category === 'contribution').map((m) => (
                   <option key={m.id} value={m.id}>
@@ -361,110 +361,110 @@ const handleDelete = async () => {
           <div className="space-y-6">
             {/* Operación */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3 uppercase text-xs tracking-wide">Operación</h3>
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase text-xs tracking-wide">Operación</h3>
               <div className="grid grid-cols-3 gap-3">
-                <SummaryCard title="Ventas" amount={summary.operation.sales} color="border-green-200" />
-                <SummaryCard title="Custodia" amount={summary.operation.custody} color="border-green-200" />
-                <SummaryCard title="Total Operación" amount={summary.operation.total} color="border-green-400" />
+                <SummaryCard title="Ventas" amount={summary.operation.sales} color="border-green-200 dark:border-green-800" />
+                <SummaryCard title="Custodia" amount={summary.operation.custody} color="border-green-200 dark:border-green-800" />
+                <SummaryCard title="Total Operación" amount={summary.operation.total} color="border-green-400 dark:border-green-600" />
               </div>
             </div>
 
             {/* Ingresos Externos */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3 uppercase text-xs tracking-wide">Ingresos Externos</h3>
-              <div className="bg-green-50 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase text-xs tracking-wide">Ingresos Externos</h3>
+              <div className="bg-green-50 dark:bg-green-950/40 rounded-lg p-4">
                 {Object.entries(summary.external_income.breakdown).length === 0
-                  ? <p className="text-sm text-gray-400">Sin ingresos externos registrados</p>
+                  ? <p className="text-sm text-gray-400 dark:text-gray-500">Sin ingresos externos registrados</p>
                   : Object.entries(summary.external_income.breakdown).map(([type, amount]) => (
                     <div key={type} className="flex justify-between text-sm py-1">
-                      <span className="text-gray-700">{getTypeLabel('external_income', type)}</span>
-                      <span className="font-medium text-green-700">Bs. {amount.toFixed(2)}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{getTypeLabel('external_income', type)}</span>
+                      <span className="font-medium text-green-700 dark:text-green-400">Bs. {amount.toFixed(2)}</span>
                     </div>
                   ))
                 }
-                <div className="flex justify-between text-sm font-bold pt-2 border-t border-green-200 mt-2">
-                  <span>Total</span>
-                  <span className="text-green-700">Bs. {summary.external_income.total.toFixed(2)}</span>
+                <div className="flex justify-between text-sm font-bold pt-2 border-t border-green-200 dark:border-green-800 mt-2">
+                  <span className="text-gray-800 dark:text-gray-100">Total</span>
+                  <span className="text-green-700 dark:text-green-400">Bs. {summary.external_income.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             {/* Aportes e Inversiones */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3 uppercase text-xs tracking-wide">Aportes e Inversiones</h3>
-              <div className="bg-blue-50 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase text-xs tracking-wide">Aportes e Inversiones</h3>
+              <div className="bg-blue-50 dark:bg-blue-950/40 rounded-lg p-4">
                 {Object.entries(summary.contribution.breakdown).length === 0
-                  ? <p className="text-sm text-gray-400">Sin aportes registrados</p>
+                  ? <p className="text-sm text-gray-400 dark:text-gray-500">Sin aportes registrados</p>
                   : Object.entries(summary.contribution.breakdown).map(([type, amount]) => (
                     <div key={type} className="flex justify-between text-sm py-1">
-                      <span className="text-gray-700">{getTypeLabel('contribution', type)}</span>
-                      <span className="font-medium text-blue-700">Bs. {amount.toFixed(2)}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{getTypeLabel('contribution', type)}</span>
+                      <span className="font-medium text-blue-700 dark:text-blue-400">Bs. {amount.toFixed(2)}</span>
                     </div>
                   ))
                 }
-                <div className="flex justify-between text-sm font-bold pt-2 border-t border-blue-200 mt-2">
-                  <span>Total</span>
-                  <span className="text-blue-700">Bs. {summary.contribution.total.toFixed(2)}</span>
+                <div className="flex justify-between text-sm font-bold pt-2 border-t border-blue-200 dark:border-blue-800 mt-2">
+                  <span className="text-gray-800 dark:text-gray-100">Total</span>
+                  <span className="text-blue-700 dark:text-blue-400">Bs. {summary.contribution.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             {/* Gastos */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3 uppercase text-xs tracking-wide">Gastos</h3>
-              <div className="bg-red-50 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase text-xs tracking-wide">Gastos</h3>
+              <div className="bg-red-50 dark:bg-red-950/40 rounded-lg p-4">
                 {Object.entries(summary.expense.breakdown).length === 0
-                  ? <p className="text-sm text-gray-400">Sin gastos registrados</p>
+                  ? <p className="text-sm text-gray-400 dark:text-gray-500">Sin gastos registrados</p>
                   : Object.entries(summary.expense.breakdown).map(([type, amount]) => (
                     <div key={type} className="flex justify-between text-sm py-1">
-                      <span className="text-gray-700">{getTypeLabel('expense', type)}</span>
-                      <span className="font-medium text-red-700">Bs. {amount.toFixed(2)}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{getTypeLabel('expense', type)}</span>
+                      <span className="font-medium text-red-700 dark:text-red-400">Bs. {amount.toFixed(2)}</span>
                     </div>
                   ))
                 }
-                <div className="flex justify-between text-sm font-bold pt-2 border-t border-red-200 mt-2">
-                  <span>Total</span>
-                  <span className="text-red-700">Bs. {summary.expense.total.toFixed(2)}</span>
+                <div className="flex justify-between text-sm font-bold pt-2 border-t border-red-200 dark:border-red-800 mt-2">
+                  <span className="text-gray-800 dark:text-gray-100">Total</span>
+                  <span className="text-red-700 dark:text-red-400">Bs. {summary.expense.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             {/* Devoluciones */}
             <div>
-              <h3 className="font-semibold text-gray-700 mb-3 uppercase text-xs tracking-wide">Devoluciones y Retornos</h3>
-              <div className="bg-yellow-50 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase text-xs tracking-wide">Devoluciones y Retornos</h3>
+              <div className="bg-yellow-50 dark:bg-yellow-950/40 rounded-lg p-4">
                 {Object.entries(summary.return.breakdown).length === 0
-                  ? <p className="text-sm text-gray-400">Sin devoluciones registradas</p>
+                  ? <p className="text-sm text-gray-400 dark:text-gray-500">Sin devoluciones registradas</p>
                   : Object.entries(summary.return.breakdown).map(([type, amount]) => (
                     <div key={type} className="flex justify-between text-sm py-1">
-                      <span className="text-gray-700">{getTypeLabel('return', type)}</span>
-                      <span className="font-medium text-yellow-700">Bs. {amount.toFixed(2)}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{getTypeLabel('return', type)}</span>
+                      <span className="font-medium text-yellow-700 dark:text-yellow-400">Bs. {amount.toFixed(2)}</span>
                     </div>
                   ))
                 }
-                <div className="flex justify-between text-sm font-bold pt-2 border-t border-yellow-200 mt-2">
-                  <span>Total</span>
-                  <span className="text-yellow-700">Bs. {summary.return.total.toFixed(2)}</span>
+                <div className="flex justify-between text-sm font-bold pt-2 border-t border-yellow-200 dark:border-yellow-800 mt-2">
+                  <span className="text-gray-800 dark:text-gray-100">Total</span>
+                  <span className="text-yellow-700 dark:text-yellow-400">Bs. {summary.return.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             {/* Resultados */}
-            <div className="border-t-2 border-gray-200 pt-4">
+            <div className="border-t-2 border-gray-200 dark:border-gray-700 pt-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className={`rounded-xl p-4 ${summary.results.operative_result >= 0 ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-                  <p className="text-sm text-gray-500">Resultado Operativo</p>
-                  <p className={`text-2xl font-bold ${summary.results.operative_result >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                <div className={`rounded-xl p-4 ${summary.results.operative_result >= 0 ? 'bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800'}`}>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Resultado Operativo</p>
+                  <p className={`text-2xl font-bold ${summary.results.operative_result >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                     Bs. {summary.results.operative_result.toFixed(2)}
                   </p>
-                  <p className="text-xs text-gray-400">Operación - Gastos</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Operación - Gastos</p>
                 </div>
-                <div className={`rounded-xl p-4 ${summary.results.net_result >= 0 ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-                  <p className="text-sm text-gray-500">Resultado Neto</p>
-                  <p className={`text-2xl font-bold ${summary.results.net_result >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                <div className={`rounded-xl p-4 ${summary.results.net_result >= 0 ? 'bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800'}`}>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Resultado Neto</p>
+                  <p className={`text-2xl font-bold ${summary.results.net_result >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                     Bs. {summary.results.net_result.toFixed(2)}
                   </p>
-                  <p className="text-xs text-gray-400">Operativo + Ingresos + Aportes - Devoluciones</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Operativo + Ingresos + Aportes - Devoluciones</p>
                 </div>
               </div>
             </div>
@@ -474,7 +474,7 @@ const handleDelete = async () => {
       {/* Modal Eliminar con motivo */}
 <Modal isOpen={deleteModal} onClose={() => setDeleteModal(false)} title="Eliminar Movimiento" size="sm">
   <div className="space-y-4">
-    <p className="text-sm text-gray-600">
+    <p className="text-sm text-gray-600 dark:text-gray-300">
       Esta acción no se puede deshacer. Indica el motivo de la eliminación (quedará registrado en auditoría).
     </p>
     <Input

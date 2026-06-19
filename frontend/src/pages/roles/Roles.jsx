@@ -87,7 +87,7 @@ const Roles = () => {
   };
 
   const columns = [
-    { key: 'name',        label: 'Rol', render: (r) => <span className="font-medium text-gray-800 capitalize">{r.name}</span> },
+    { key: 'name',        label: 'Rol', render: (r) => <span className="font-medium text-gray-800 dark:text-gray-100 capitalize">{r.name}</span> },
     { key: 'description', label: 'Descripción', render: (r) => r.description || '—' },
     { key: 'total_users', label: 'Usuarios', render: (r) => <Badge label={r.total_users} color="blue" /> },
     { key: 'total_permissions', label: 'Permisos', render: (r) => <Badge label={r.total_permissions} color="purple" /> },
@@ -97,7 +97,7 @@ const Roles = () => {
         can('roles:manage') && !PROTECTED_ROLES.includes(r.name) ? (
           <Button size="sm" variant="secondary" onClick={() => openPermissions(r)}>Permisos</Button>
         ) : (
-          <span className="text-xs text-gray-400">Sistema</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">Sistema</span>
         )
       )
     },
@@ -111,9 +111,9 @@ const Roles = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="font-semibold text-gray-800">Roles del sistema</h3>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100">Roles del sistema</h3>
         </div>
         <Table columns={columns} data={roles} loading={loading} emptyMessage="No hay roles registrados" />
       </div>
@@ -128,15 +128,15 @@ const Roles = () => {
           {Object.entries(grouped).map(([module, perms]) => {
             const allSelected = perms.every((p) => selected.includes(p.id));
             return (
-              <div key={module} className="border border-gray-200 rounded-lg p-4">
+              <div key={module} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-gray-800 capitalize">{module}</h4>
-                  <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-100 capitalize">{module}</h4>
+                  <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={allSelected}
                       onChange={() => toggleModule(perms)}
-                      className="rounded border-gray-300 text-blue-600"
+                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600"
                     />
                     Seleccionar todo
                   </label>
@@ -148,9 +148,9 @@ const Roles = () => {
                         type="checkbox"
                         checked={selected.includes(p.id)}
                         onChange={() => togglePermission(p.id)}
-                        className="rounded border-gray-300 text-blue-600"
+                        className="rounded border-gray-300 dark:border-gray-600 text-blue-600"
                       />
-                      <span className="text-gray-700">{p.action}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{p.action}</span>
                     </label>
                   ))}
                 </div>
@@ -158,7 +158,7 @@ const Roles = () => {
             );
           })}
         </div>
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-4">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-4">
           <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancelar</Button>
           <Button onClick={handleSave} loading={saving}>Guardar Permisos</Button>
         </div>
