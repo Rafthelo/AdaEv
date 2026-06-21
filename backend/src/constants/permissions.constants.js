@@ -37,6 +37,13 @@ const PERMISSIONS = {
   CUSTODY_RETURN: 'custody:return',
   CUSTODY_MANAGE: 'custody:manage',
 
+  //Registros Participaciones, Seminarios, 
+  SEMINAR_READ:    'seminar:read',
+  SEMINAR_CREATE:  'seminar:create',
+  SEMINAR_UPDATE:  'seminar:update',
+  SEMINAR_DELETE:  'seminar:delete',
+  SEMINAR_DELIVER: 'seminar:deliver',
+
   // Cash Register
   CASH_OPEN:     'cash:open',
   CASH_CLOSE:    'cash:close',

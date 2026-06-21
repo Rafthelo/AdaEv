@@ -106,32 +106,39 @@ const Dashboard = () => {
       ) : stats && (
         <div className="space-y-6">
           {/* Fila 1 — Números clave */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard
-              icon="💰" title="Total ventas"
-              value={`Bs. ${stats.summary.total_revenue.toFixed(2)}`}
-              subtitle={`${stats.summary.total_sales} transacciones`}
-              color="text-green-600 dark:text-green-400"
-            />
-            <StatCard
-              icon="🎫" title="Objetos en custodia"
-              value={stats.summary.custody_active}
-              subtitle="Pendientes de devolución"
-              color="text-blue-600 dark:text-blue-400"
-            />
-            <StatCard
-              icon="⚠️" title="Alertas de stock"
-              value={stats.summary.low_stock}
-              subtitle="Productos bajo mínimo"
-              color={stats.summary.low_stock > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'}
-            />
-            <StatCard
-              icon="👥" title="Vendedores activos"
-              value={stats.summary.active_sellers}
-              subtitle="Asignados al evento"
-              color="text-purple-600 dark:text-purple-400"
-            />
-          </div>
+        
+<div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+  <StatCard
+    icon="💰" title="Total ventas"
+    value={`Bs. ${stats.summary.total_revenue.toFixed(2)}`}
+    subtitle={`${stats.summary.total_sales} transacciones`}
+    color="text-green-600 dark:text-green-400"
+  />
+  <StatCard
+    icon="🎫" title="Objetos en custodia"
+    value={stats.summary.custody_active}
+    subtitle="Pendientes de devolución"
+    color="text-blue-600 dark:text-blue-400"
+  />
+  <StatCard
+    icon="🎓" title="Participantes"
+    value={`Bs. ${stats.summary.seminar_revenue.toFixed(2)}`}
+    subtitle={`${stats.summary.seminar_participants} participantes`}
+    color="text-indigo-600 dark:text-indigo-400"
+  />
+  <StatCard
+    icon="⚠️" title="Alertas de stock"
+    value={stats.summary.low_stock}
+    subtitle="Productos bajo mínimo"
+    color={stats.summary.low_stock > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'}
+  />
+  <StatCard
+    icon="👥" title="Vendedores activos"
+    value={stats.summary.active_sellers}
+    subtitle="Asignados al evento"
+    color="text-purple-600 dark:text-purple-400"
+  />
+</div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Últimas ventas */}

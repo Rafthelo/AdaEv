@@ -9,6 +9,7 @@ const navItems = [
   { to: '/inventory',     label: 'Inventario',      permission: 'inventory:read',        icon: '🏪' },
   { to: '/sales',         label: 'Ventas',          permission: 'sales:read',            icon: '💰' },
   { to: '/custody',       label: 'Custodia',        permission: 'custody:read',          icon: '🎫' },
+  { to: '/seminar',       label: 'Participantes',   permission: 'seminar:read', icon: '🎓' },
   { to: '/finance',       label: 'Finanzas',        permission: 'finance:read',          icon: '💵' },
   { to: '/organizations', label: 'Organizaciones',  permission: 'organizations:read',    icon: '🏢' },
   { to: '/reports',       label: 'Reportes',        permission: 'sales:read_all',        icon: '📊' },

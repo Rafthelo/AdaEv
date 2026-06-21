@@ -111,7 +111,7 @@ const Finance = () => {
   }, [page, filterEvent, filterCat, refreshKey]);
 
   useEffect(() => {
-    getEvents({ limit: 100 }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
+    getEvents({ limit: 100, status: 'active' }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
     getOrganizations().then(({ data }) => setOrgs(data.data || [])).catch(() => {});
   }, []);
 
@@ -362,11 +362,12 @@ const handleDelete = async () => {
             {/* Operación */}
             <div>
               <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase text-xs tracking-wide">Operación</h3>
-              <div className="grid grid-cols-3 gap-3">
-                <SummaryCard title="Ventas" amount={summary.operation.sales} color="border-green-200 dark:border-green-800" />
-                <SummaryCard title="Custodia" amount={summary.operation.custody} color="border-green-200 dark:border-green-800" />
-                <SummaryCard title="Total Operación" amount={summary.operation.total} color="border-green-400 dark:border-green-600" />
-              </div>
+<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+  <SummaryCard title="Ventas" amount={summary.operation.sales} color="border-green-200" />
+  <SummaryCard title="Custodia" amount={summary.operation.custody} color="border-green-200" />
+  <SummaryCard title="Seminarios" amount={summary.operation.seminar} color="border-green-200" />
+  <SummaryCard title="Total Operación" amount={summary.operation.total} color="border-green-400" />
+</div>
             </div>
 
             {/* Ingresos Externos */}

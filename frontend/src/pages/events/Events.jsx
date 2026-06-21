@@ -309,28 +309,33 @@ const Events = () => {
 
         {summaryData && (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Ventas</p>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-400">Bs. {parseFloat(summaryData.sales_revenue).toFixed(2)}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.sales_count} transacciones</p>
-              </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Custodia</p>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">Bs. {parseFloat(summaryData.custody_revenue).toFixed(2)}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.custody_received} recibidos, {summaryData.custody_returned} devueltos, {summaryData.custody_lost} perdidos</p>
-              </div>
-              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Participantes</p>
-                <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{summaryData.participants_count}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">Usuarios que actuaron en el evento</p>
-              </div>
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Anulaciones</p>
-                <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{summaryData.voids_count}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.inventory_adjustments} ajustes de inventario</p>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Ventas</p>
+              <p className="text-2xl font-bold text-green-700 dark:text-green-400">Bs. {parseFloat(summaryData.sales_revenue).toFixed(2)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.sales_count} transacciones</p>
             </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Custodia</p>
+              <p className="text-2xl font-bold text-blue-700 dark:text-blue-400">Bs. {parseFloat(summaryData.custody_revenue).toFixed(2)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.custody_received} recibidos, {summaryData.custody_returned} devueltos, {summaryData.custody_lost} perdidos</p>
+            </div>
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Seminarios</p>
+              <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-400">Bs. {parseFloat(summaryData.seminar_revenue).toFixed(2)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.seminar_participants} participantes</p>
+            </div>
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Participantes evento</p>
+              <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{summaryData.participants_count}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Usuarios que actuaron en el evento</p>
+            </div>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Anulaciones</p>
+              <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{summaryData.voids_count}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{summaryData.inventory_adjustments} ajustes de inventario</p>
+            </div>
+          </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className={`rounded-xl p-4 border ${summaryData.operative_result >= 0 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>

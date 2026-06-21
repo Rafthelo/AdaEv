@@ -84,6 +84,11 @@ const calculateAndSave = async (eventId, generatedBy) => {
     custody_returned:       parseInt(custodyStats.returned) || 0,
     custody_lost:           parseInt(custodyStats.lost) || 0,
     custody_revenue:        parseFloat(custodyStats.revenue) || 0,
+    seminar_participants:   parseInt((await pool.execute(
+    `SELECT COUNT(*) AS cnt FROM seminar_enrollments e
+     JOIN seminar_topics t ON e.topic_id = t.id WHERE t.event_id = ?`, [eventId]
+  ))[0][0].cnt) || 0,
+  seminar_revenue:        finance.operation.seminar,
     external_income:        finance.external_income.total,
     contributions:          finance.contribution.total,
     expenses:               finance.expense.total,

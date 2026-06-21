@@ -52,7 +52,7 @@ const Inventory = () => {
   }, [page, lowStock, refreshKey]);
 
   useEffect(() => {
-    getEvents({ limit: 100 }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
+    getEvents({ limit: 100, status: 'active' }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
     getProducts({ limit: 100, is_active: 1 }).then(({ data }) => setProducts(data.data || [])).catch(() => {});
   }, []);
 

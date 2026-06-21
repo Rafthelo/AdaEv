@@ -77,7 +77,7 @@ const Custody = () => {
   }, [page, search, statusFilter, refreshKey, user]);
 
   useEffect(() => {
-    getEvents({ limit: 100 }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
+    getEvents({ limit: 100, status: 'active' }).then(({ data }) => setEvents(data.data || [])).catch(() => {});
   }, []);
 
   const handlePhotoChange = (e) => {

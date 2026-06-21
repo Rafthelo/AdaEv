@@ -16,12 +16,13 @@ const upsert = async (eventId, data, generatedBy) => {
     `INSERT INTO event_summaries (
        event_id, sales_count, sales_revenue,
        custody_received, custody_returned, custody_lost, custody_revenue,
+       seminar_participants, seminar_revenue,
        external_income, contributions, expenses, returns,
        operative_result, net_result,
        participants_count, voids_count, inventory_adjustments,
        top_products, opened_at, closed_at,
        generated_by, summary_version
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        sales_count = VALUES(sales_count),
        sales_revenue = VALUES(sales_revenue),
@@ -29,6 +30,8 @@ const upsert = async (eventId, data, generatedBy) => {
        custody_returned = VALUES(custody_returned),
        custody_lost = VALUES(custody_lost),
        custody_revenue = VALUES(custody_revenue),
+       seminar_participants = VALUES(seminar_participants),
+       seminar_revenue = VALUES(seminar_revenue),
        external_income = VALUES(external_income),
        contributions = VALUES(contributions),
        expenses = VALUES(expenses),
@@ -47,6 +50,7 @@ const upsert = async (eventId, data, generatedBy) => {
     [
       eventId, data.sales_count, data.sales_revenue,
       data.custody_received, data.custody_returned, data.custody_lost, data.custody_revenue,
+      data.seminar_participants, data.seminar_revenue,
       data.external_income, data.contributions, data.expenses, data.returns,
       data.operative_result, data.net_result,
       data.participants_count, data.voids_count, data.inventory_adjustments,

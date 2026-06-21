@@ -141,6 +141,14 @@ const getSummary = async (eventId) => {
      WHERE event_id = ? AND price > 0`,
     [eventId]
   );
+// Seminarios del evento
+  const [[seminarData]] = await pool.execute(
+    `SELECT COALESCE(SUM(e.amount_paid), 0) AS total
+     FROM seminar_enrollments e
+     JOIN seminar_topics t ON e.topic_id = t.id
+     WHERE t.event_id = ?`,
+    [eventId]
+  );
 
   // Movimientos financieros por categoría y tipo
   const [movements] = await pool.execute(
@@ -167,7 +175,7 @@ const getSummary = async (eventId) => {
   const sumCategory = (cat) =>
     Object.values(byCategory[cat] || {}).reduce((a, b) => a + b, 0);
 
-  const operationTotal    = parseFloat(salesData.total) + parseFloat(custodyData.total);
+  const operationTotal    = parseFloat(salesData.total) + parseFloat(custodyData.total) + parseFloat(seminarData.total);
   const externalTotal     = sumCategory('external_income');
   const contributionTotal = sumCategory('contribution');
   const expenseTotal      = sumCategory('expense');
@@ -176,11 +184,12 @@ const getSummary = async (eventId) => {
   const operativeResult = operationTotal - expenseTotal;
   const netResult       = operativeResult + externalTotal + contributionTotal - returnTotal;
 
-  return {
+return {
     operation: {
-      sales:   parseFloat(salesData.total),
-      custody: parseFloat(custodyData.total),
-      total:   operationTotal,
+      sales:    parseFloat(salesData.total),
+      custody:  parseFloat(custodyData.total),
+      seminar:  parseFloat(seminarData.total),
+      total:    operationTotal,
     },
     external_income: {
       breakdown: byCategory.external_income,

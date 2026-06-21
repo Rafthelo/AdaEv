@@ -19,6 +19,7 @@ import Finance       from '../pages/finance/Finance';
 import Organizations from '../pages/organizations/Organizations';
 import Profile from '../pages/profile/Profile';
 import Reports from '../pages/reports/Reports';
+import Seminar from '../pages/seminar/Seminar';
 
 const AppRouter = () => {
   return (
@@ -146,6 +147,14 @@ const AppRouter = () => {
   <PrivateRoute>
     <PermissionRoute permission="sales:read_all">
       <Reports />
+    </PermissionRoute>
+  </PrivateRoute>
+} />
+
+<Route path="/seminar" element={
+  <PrivateRoute>
+    <PermissionRoute permission="seminar:read">
+      <Seminar />
     </PermissionRoute>
   </PrivateRoute>
 } />

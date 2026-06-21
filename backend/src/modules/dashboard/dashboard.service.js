@@ -36,6 +36,17 @@ const getStats = async (eventId = null) => {
     p
   );
 
+// Seminarios
+const [[seminarStats]] = await pool.execute(
+  `SELECT
+     COUNT(e.id) AS total_participants,
+     COALESCE(SUM(e.amount_paid), 0) AS total_revenue
+   FROM seminar_enrollments e
+   JOIN seminar_topics t ON e.topic_id = t.id
+   WHERE 1=1 ${eventId ? 'AND t.event_id = ?' : ''}`,
+  p
+);
+
   // Stock bajo
   const [[lowStockStats]] = await pool.execute(
     `SELECT COUNT(*) AS total_low
@@ -118,14 +129,16 @@ const getStats = async (eventId = null) => {
     bartender:   'Bartender',
   };
 
-  return {
-    summary: {
-      total_sales:     parseInt(salesStats.total_sales),
-      total_revenue:   parseFloat(salesStats.total_revenue),
-      custody_active:  parseInt(custodyStats.total_active),
-      low_stock:       parseInt(lowStockStats.total_low),
-      active_sellers:  parseInt(sellersStats.total_sellers),
-    },
+return {
+  summary: {
+    total_sales:     parseInt(salesStats.total_sales),
+    total_revenue:   parseFloat(salesStats.total_revenue),
+    custody_active:  parseInt(custodyStats.total_active),
+    low_stock:       parseInt(lowStockStats.total_low),
+    active_sellers:  parseInt(sellersStats.total_sellers),
+    seminar_participants: parseInt(seminarStats.total_participants) || 0,
+    seminar_revenue:      parseFloat(seminarStats.total_revenue) || 0,
+  },
     recent_sales: recentSales,
     seller_performance: sellerPerformance.map((s) => ({
       ...s,
