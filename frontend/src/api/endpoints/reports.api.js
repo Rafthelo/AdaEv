@@ -31,3 +31,9 @@ export const downloadFinanceReport = (eventId) =>
 
 export const downloadPerformanceReport = (eventId) =>
   downloadFile('/reports/performance', eventId ? { event_id: eventId } : {}, 'reporte_rendimiento.xlsx');
+
+export const downloadSeminarReport = (eventId) =>
+  downloadFile('/reports/seminar', eventId ? { event_id: eventId } : {}, 'reporte_participantes.xlsx');
+
+export const downloadInventoryReport = (eventId) =>
+  downloadFile('/reports/inventory', eventId ? { event_id: eventId } : {}, 'reporte_inventario.xlsx');

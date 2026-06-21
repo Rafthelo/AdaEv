@@ -5,9 +5,9 @@ echo   Iniciando AdaEv
 echo ===================================
 echo.
 
-start "AdaEv Backend"  cmd /k "%~dp0iniciar-backend.bat"
+start "AdaEv Backend"  cmd /k "%~dp0backend.bat"
 timeout /t 3 /nobreak >nul
-start "AdaEv Frontend" cmd /k "%~dp0iniciar-frontend.bat"
+start "AdaEv Frontend" cmd /k "%~dp0frontend.bat"
 
 timeout /t 5 /nobreak >nul
 echo Abriendo navegador...

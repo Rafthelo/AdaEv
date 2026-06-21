@@ -28,4 +28,16 @@ router.get('/performance',
   reportsController.performanceReport
 );
 
+router.get('/seminar',
+  authMiddleware,
+  requirePermission(PERMISSIONS.SEMINAR_READ),
+  reportsController.seminarReport
+);
+
+router.get('/inventory',
+  authMiddleware,
+  requirePermission(PERMISSIONS.INVENTORY_READ),
+  reportsController.inventoryReport
+);
+
 module.exports = router;

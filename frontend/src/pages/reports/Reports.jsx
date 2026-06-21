@@ -7,6 +7,7 @@ import { getEvents } from '../../api/endpoints/events.api';
 import {
   downloadSalesReport, downloadCustodyReport,
   downloadFinanceReport, downloadPerformanceReport,
+  downloadSeminarReport, downloadInventoryReport,
 } from '../../api/endpoints/reports.api';
 
 const ReportCard = ({ icon, title, description, onDownload, loading, disabled, requiresEvent }) => (
@@ -108,12 +109,30 @@ const Reports = () => {
           />
         )}
 
-        {can('sales:read_all') && (
+{can('sales:read_all') && (
           <ReportCard
             icon="👥" title="Rendimiento de Vendedores"
             description="Ventas totales y desempeño individual de cada vendedor"
             onDownload={() => handleDownload('performance', downloadPerformanceReport)}
             loading={loadingType === 'performance'}
+          />
+        )}
+
+        {can('seminar:read') && (
+          <ReportCard
+            icon="🎓" title="Reporte de Participantes"
+            description="Inscritos a seminarios con tema, monto pagado y estado de entrega"
+            onDownload={() => handleDownload('seminar', downloadSeminarReport)}
+            loading={loadingType === 'seminar'}
+          />
+        )}
+
+        {can('inventory:read') && (
+          <ReportCard
+            icon="📦" title="Reporte de Inventario"
+            description="Stock actual, mínimos y alertas por producto y evento"
+            onDownload={() => handleDownload('inventory', downloadInventoryReport)}
+            loading={loadingType === 'inventory'}
           />
         )}
       </div>

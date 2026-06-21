@@ -12,6 +12,7 @@ import useAuth from '../../hooks/useAuth';
 import { getUsers, createUser, updateUser, deactivateUser, deleteUser } from '../../api/endpoints/users.api';
 import { getRoles } from '../../api/endpoints/roles.api';
 import { getEvents } from '../../api/endpoints/events.api';
+import { QRCodeSVG } from 'qrcode.react';
 
 const EMPTY_FORM = {
   username: '', email: '', password: '',
@@ -42,6 +43,9 @@ const Users = () => {
   const [saving,     setSaving]     = useState(false);
   const [alert,      setAlert]      = useState({ type: '', message: '' });
   const [refreshKey, setRefreshKey] = useState(0);
+  const [qrModal, setQrModal] = useState(false);
+  const [manualIp, setManualIp] = useState(() => localStorage.getItem('adaev_local_ip') || '');
+
   useEffect(() => {
     let cancelled = false;
     const fetch = async () => {
@@ -203,11 +207,14 @@ const handleDelete = async (id) => {
             placeholder="Buscar usuario..."
             value={search}
             onChange={(e) => { setSearch(e.target.value);  setRefreshKey((k) => k + 1); }}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
           />
-          {can('users:manage') && (
-            <Button onClick={openCreate} icon="＋">Nuevo Usuario</Button>
-          )}
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setQrModal(true)} icon="📱">Generar QR</Button>
+            {can('users:manage') && (
+              <Button onClick={openCreate} icon="＋">Nuevo Usuario</Button>
+            )}
+          </div>
         </div>
 
         <Table
@@ -308,6 +315,43 @@ const handleDelete = async (id) => {
           </div>
         </form>
       </Modal>
+
+{/* Modal QR de acceso */}
+<Modal isOpen={qrModal} onClose={() => setQrModal(false)} title="Código QR de acceso" size="sm">
+  <div className="text-center space-y-4">
+    <p className="text-sm text-gray-600 dark:text-gray-400">
+      Escanea este código desde el celular para abrir AdaEv directamente, sin escribir la dirección.
+    </p>
+    {window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? (
+      <div className="space-y-3">
+        <p className="text-sm text-amber-600 dark:text-amber-400">
+          Estás accediendo por "localhost". Ingresa la IP de red de esta PC para generar el QR correcto:
+        </p>
+        <Input
+          value={manualIp}
+          onChange={(e) => {
+            setManualIp(e.target.value);
+            localStorage.setItem('adaev_local_ip', e.target.value);
+          }}
+          placeholder="Ej. 192.168.1.8//0.10"
+        />
+        {manualIp && (
+          <div className="bg-white p-4 rounded-lg inline-block">
+            <QRCodeSVG value={`http://${manualIp}:5173`} size={220} />
+          </div>
+        )}
+      </div>
+    ) : (
+      <div className="bg-white p-4 rounded-lg inline-block">
+        <QRCodeSVG value={window.location.origin} size={220} />
+      </div>
+    )}
+    <p className="text-xs text-gray-400 dark:text-gray-500 font-mono">
+      {window.location.hostname === 'localhost' ? (manualIp ? `http://${manualIp}:5173` : '') : window.location.origin}
+    </p>
+  </div>
+</Modal>
+
     </PageWrapper>
   );
 };

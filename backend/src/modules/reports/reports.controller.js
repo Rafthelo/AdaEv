@@ -43,4 +43,22 @@ const performanceReport = async (req, res, next) => {
   }
 };
 
-module.exports = { salesReport, custodyReport, financeReport, performanceReport };
+const seminarReport = async (req, res, next) => {
+  try {
+    const workbook = await reportsService.generateSeminarReport(req.query.event_id || null);
+    await sendWorkbook(res, workbook, `reporte_participantes_${Date.now()}.xlsx`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const inventoryReport = async (req, res, next) => {
+  try {
+    const workbook = await reportsService.generateInventoryReport(req.query.event_id || null);
+    await sendWorkbook(res, workbook, `reporte_inventario_${Date.now()}.xlsx`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { salesReport, custodyReport, financeReport, performanceReport, seminarReport, inventoryReport };

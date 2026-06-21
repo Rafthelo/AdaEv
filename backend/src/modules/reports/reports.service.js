@@ -265,9 +265,125 @@ const generateSellerPerformanceReport = async (eventId) => {
   return workbook;
 };
 
+// ============ REPORTE DE SEMINARIOS (PARTICIPANTES) ============
+const generateSeminarReport = async (eventId) => {
+  const eventName = await getEventName(eventId);
+
+  let where = 'WHERE 1=1';
+  const params = [];
+  if (eventId) { where += ' AND t.event_id = ?'; params.push(eventId); }
+
+  const [rows] = await pool.execute(
+    `SELECT
+       e.ru_code, e.full_name, e.career, e.amount_paid, e.status,
+       e.created_at, e.delivered_at,
+       t.name AS topic_name,
+       u.username AS delivered_by_username
+     FROM seminar_enrollments e
+     JOIN seminar_topics t ON e.topic_id = t.id
+     LEFT JOIN users u ON e.delivered_by = u.id
+     ${where}
+     ORDER BY t.name ASC, e.full_name ASC`,
+    params
+  );
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Participantes');
+  addTitle(sheet, 'Reporte de Participantes', eventName);
+
+  const headerRow = sheet.addRow(['RU', 'Nombre', 'Carrera', 'Tema', 'Monto (Bs.)', 'Estado', 'Inscrito', 'Entregado', 'Entregado por']);
+  applyHeaderStyle(headerRow);
+
+  const STATUS_LABELS = { registered: 'Registrado', delivered: 'Entregado' };
+  let totalRevenue = 0;
+
+  rows.forEach((r) => {
+    totalRevenue += parseFloat(r.amount_paid) || 0;
+    sheet.addRow([
+      r.ru_code,
+      r.full_name,
+      r.career || '—',
+      r.topic_name,
+      parseFloat(r.amount_paid) || 0,
+      STATUS_LABELS[r.status] || r.status,
+      new Date(r.created_at).toLocaleDateString('es-BO'),
+      r.delivered_at ? new Date(r.delivered_at).toLocaleString('es-BO') : '—',
+      r.delivered_by_username || '—',
+    ]);
+  });
+
+  sheet.addRow([]);
+  const totalRow = sheet.addRow(['', '', '', '', totalRevenue, 'TOTAL RECAUDADO', '', '', '']);
+  totalRow.font = { bold: true };
+
+  sheet.columns = [
+    { width: 12 }, { width: 28 }, { width: 22 }, { width: 20 },
+    { width: 14 }, { width: 14 }, { width: 14 }, { width: 20 }, { width: 16 },
+  ];
+  sheet.getColumn(5).numFmt = '#,##0.00';
+
+  return workbook;
+};
+
+// ============ REPORTE DE INVENTARIO ============
+const generateInventoryReport = async (eventId) => {
+  const eventName = await getEventName(eventId);
+
+  let where = 'WHERE 1=1';
+  const params = [];
+  if (eventId) { where += ' AND i.event_id = ?'; params.push(eventId); }
+
+  const [rows] = await pool.execute(
+    `SELECT
+       p.sku, p.name AS product_name, c.name AS category_name,
+       i.quantity, i.min_stock, e.name AS event_name
+     FROM inventory i
+     JOIN products p ON i.product_id = p.id
+     LEFT JOIN categories c ON p.category_id = c.id
+     LEFT JOIN events e ON i.event_id = e.id
+     ${where}
+     ORDER BY p.name ASC`,
+    params
+  );
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Inventario');
+  addTitle(sheet, 'Reporte de Inventario', eventName);
+
+  const headerRow = sheet.addRow(['SKU', 'Producto', 'Categoría', 'Evento', 'Stock actual', 'Stock mínimo', 'Estado']);
+  applyHeaderStyle(headerRow);
+
+  rows.forEach((r) => {
+    const isLow = r.min_stock > 0 && r.quantity <= r.min_stock;
+    const row = sheet.addRow([
+      r.sku || '—',
+      r.product_name,
+      r.category_name || '—',
+      r.event_name || 'General',
+      r.quantity,
+      r.min_stock,
+      isLow ? 'Stock bajo' : 'Normal',
+    ]);
+    if (isLow) {
+      row.eachCell((cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE2E2' } };
+      });
+    }
+  });
+
+  sheet.columns = [
+    { width: 14 }, { width: 30 }, { width: 18 }, { width: 18 },
+    { width: 14 }, { width: 14 }, { width: 14 },
+  ];
+
+  return workbook;
+};
+
 module.exports = {
   generateSalesReport,
   generateCustodyReport,
   generateFinanceReport,
   generateSellerPerformanceReport,
+  generateSeminarReport,
+  generateInventoryReport,
 };

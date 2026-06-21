@@ -6,9 +6,18 @@ const env             = require('./src/config/environment');
 
 const server = http.createServer(app);
 
+const LOCAL_NETWORK_PATTERN = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):5173$/;
+
 const io = new Server(server, {
   cors: {
-    origin:      env.frontendUrl.split(','),
+    origin: (origin, callback) => {
+      const whitelist = env.frontendUrl.split(',');
+      if (!origin || whitelist.includes(origin) || LOCAL_NETWORK_PATTERN.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   },
   transports: ['websocket', 'polling'],
