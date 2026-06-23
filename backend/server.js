@@ -6,8 +6,7 @@ const env             = require('./src/config/environment');
 
 const server = http.createServer(app);
 
-const LOCAL_NETWORK_PATTERN = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):5173$/;
-
+const LOCAL_NETWORK_PATTERN = /^(https?):\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$|^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/;
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {

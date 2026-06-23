@@ -1,9 +1,8 @@
 const env = require('./environment');
 
 // Acepta localhost y cualquier IP de red local privada (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-// en el puerto 5173, sin importar cuál sea la IP exacta del router/WiFi actual.
-const LOCAL_NETWORK_PATTERN = /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):5173$/;
-
+// en el puerto 5173, sin importar cuál sea la IP exacta del router/WiFi actual. y tambien cloudflared
+const LOCAL_NETWORK_PATTERN = /^(https?):\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$|^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/;
 const corsOptions = {
   origin: (origin, callback) => {
     const whitelist = env.frontendUrl.split(',');
