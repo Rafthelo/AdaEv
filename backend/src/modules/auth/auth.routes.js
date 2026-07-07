@@ -12,6 +12,7 @@ router.post('/login',
 );
 
 router.post('/refresh',
+  authLimiter,
   authController.refresh
 );
 
